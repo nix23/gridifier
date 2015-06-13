@@ -14,6 +14,6 @@ Read [license](http://gridifier.io/license/) for details.
 
 ### Support
 
-For any questions feel free to use gridifier community [community](http://gridifier.io/community/).
+For any questions feel free to use gridifier community [community](http://community.gridifier.io/).
 
 You can find the gridifier team in skype.(username Gridifier)

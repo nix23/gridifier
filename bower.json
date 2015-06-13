@@ -1,0 +1,11 @@
+{
+    "name": "gridifier",
+    "version": "1.0.0",
+    "license": [
+        "GPLV3 for non-commercial usage",
+        "Commercial license for commercial usage"
+    ],
+    "authors": [
+        { "name": "Eduard Pleh", "email": "szdszdszd@inbox.lv" }
+    ]
+}

@@ -32,8 +32,8 @@ Gridifier.ImagesResolver.ResolvedImage = function(a, b) {
         Event.add(c._resolvedImage, "error", c._errorCallback);
     };
     this._unbindEvents = function() {
-        Event.remove(c._resolvedImage, "load", c._loadCallback);
-        Event.remove(c._resolvedImage, "error", c._errorCallback);
+        if (c._loadCallback != null) Event.remove(c._resolvedImage, "load", c._loadCallback);
+        if (c._errorCallback != null) Event.remove(c._resolvedImage, "error", c._errorCallback);
     };
     this.destruct = function() {
         c._unbindEvents();

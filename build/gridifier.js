@@ -1,4 +1,4 @@
-/* Gridifier v1.0.1
+/* Gridifier v1.0.2
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -7485,8 +7485,8 @@
             b.add(d._resolvedImage, "error", d._errorCallback);
         };
         this._unbindEvents = function() {
-            b.remove(d._resolvedImage, "load", d._loadCallback);
-            b.remove(d._resolvedImage, "error", d._errorCallback);
+            if (d._loadCallback != null) b.remove(d._resolvedImage, "load", d._loadCallback);
+            if (d._errorCallback != null) b.remove(d._resolvedImage, "error", d._errorCallback);
         };
         this.destruct = function() {
             d._unbindEvents();

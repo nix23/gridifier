@@ -1,0 +1,10 @@
+body {
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.grid > img {
+    visibility: hidden;
+    width: 20%;
+    margin: 2.5%;
+}

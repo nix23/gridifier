@@ -1,4 +1,4 @@
-/* Gridifier v1.0.0
+/* Gridifier v1.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -47,6 +47,7 @@ Gridifier.Operations.Append = function(a, b, c, d, e, f, g, h, i, j, k) {
 
 Gridifier.Operations.Append.prototype.execute = function(a) {
     var a = this._collector.filterOnlyNotConnectedItems(this._collector.toDOMCollection(a));
+    if (a.length == 0) return;
     this._sizesResolverManager.startCachingTransaction();
     this._collector.ensureAllItemsAreAttachedToGrid(a);
     this._collector.ensureAllItemsCanBeAttachedToGrid(a);
@@ -72,6 +73,8 @@ Gridifier.Operations.Append.prototype._append = function(a) {
 };
 
 Gridifier.Operations.Append.prototype.executeInsertBefore = function(a, b) {
+    var a = this._collector.filterOnlyNotConnectedItems(this._collector.toDOMCollection(a));
+    if (a.length == 0) return;
     var c = this._connections.get();
     if (c.length == 0) {
         this.execute(a);
@@ -114,6 +117,8 @@ Gridifier.Operations.Append.prototype.executeInsertBefore = function(a, b) {
 };
 
 Gridifier.Operations.Append.prototype.executeInsertAfter = function(a, b) {
+    var a = this._collector.filterOnlyNotConnectedItems(this._collector.toDOMCollection(a));
+    if (a.length == 0) return;
     var c = this._connections.get();
     if (c.length == 0) {
         this.execute(a);

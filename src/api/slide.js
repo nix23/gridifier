@@ -1,4 +1,4 @@
-/* Gridifier v1.0.0
+/* Gridifier v1.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 

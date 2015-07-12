@@ -1,4 +1,4 @@
-/* Gridifier v1.0.0
+/* Gridifier v1.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -54,6 +54,7 @@ Gridifier.Settings = function(a, b, c, d, e) {
     this._retransformQueueBatchTimeout = null;
     this._disableRetransformQueueOnDrags = false;
     this._repackSize = null;
+    this._resolveImages = false;
     this._css = {};
     this._construct = function() {
         f._settings = a;
@@ -124,6 +125,7 @@ Gridifier.Settings.prototype._parse = function() {
     this._dragifierItemSelector = b.dragifierItemSelector;
     this._disableRetransformQueueOnDrags = this._coreSettingsParser.parseDisableRetransformQueueOnDrags();
     this._repackSize = this._coreSettingsParser.parseCustomRepackSize();
+    this._resolveImages = this._coreSettingsParser.parseResolveImages();
     var c = this;
     this._gridifier.setDefaultPrepend = function() {
         c.setDefaultPrepend.call(c);
@@ -510,4 +512,8 @@ Gridifier.Settings.prototype.hasCustomRepackSize = function() {
 
 Gridifier.Settings.prototype.getCustomRepackSize = function() {
     return this._repackSize;
+};
+
+Gridifier.Settings.prototype.shouldResolveImages = function() {
+    return this._resolveImages;
 };

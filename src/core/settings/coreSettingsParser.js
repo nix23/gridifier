@@ -1,4 +1,4 @@
-/* Gridifier v1.0.0
+/* Gridifier v1.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -285,4 +285,9 @@ Gridifier.CoreSettingsParser.prototype.parseDisableRetransformQueueOnDrags = fun
 Gridifier.CoreSettingsParser.prototype.parseCustomRepackSize = function() {
     if (!this._settings.hasOwnProperty("repackSize")) return null;
     return this._settings.repackSize;
+};
+
+Gridifier.CoreSettingsParser.prototype.parseResolveImages = function() {
+    if (!this._settings.hasOwnProperty("resolveImages")) return false;
+    return this._settings.resolveImages;
 };

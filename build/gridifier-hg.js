@@ -1,4 +1,4 @@
-/* Gridifier v1.0.0
+/* Gridifier v1.0.1
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -789,6 +789,7 @@
         this._lifecycleCallbacks = null;
         this._itemClonesManager = null;
         this._responsiveClassesManager = null;
+        this._imagesResolver = null;
         this._connectors = null;
         this._connections = null;
         this._connectionsSorter = null;
@@ -820,6 +821,9 @@
             d._operation = new e.Operation();
             d._lifecycleCallbacks = new e.LifecycleCallbacks(d._collector);
             d._grid.setCollectorInstance(d._collector);
+            if (d._settings.shouldResolveImages()) {
+                d._imagesResolver = new e.ImagesResolver(d);
+            }
             if (d._settings.isVerticalGrid()) {
                 d._connections = new e.VerticalGrid.Connections(d, d._guid, d._settings, d._sizesResolverManager, d._eventEmitter);
                 d._connectionsSorter = new e.VerticalGrid.ConnectionsSorter(d._connections, d._settings, d._guid);
@@ -1114,6 +1118,17 @@
         return this;
     };
     e.prototype.prepend = function(a, b, c) {
+        if (this._settings.shouldResolveImages()) {
+            this._imagesResolver.scheduleImagesResolve(this._collector.toDOMCollection(a), e.ImagesResolver.OPERATIONS.PREPEND, {
+                batchSize: b,
+                batchTimeout: c
+            });
+        } else {
+            this.executePrepend(a, b, c);
+        }
+        return this;
+    };
+    e.prototype.executePrepend = function(a, b, c) {
         if (this._settings.isMirroredPrepend()) {
             this.insertBefore(a, null, b, c);
             return this;
@@ -1126,9 +1141,19 @@
         setTimeout(function() {
             d.call(f);
         }, e.REFLOW_OPTIMIZATION_TIMEOUT);
-        return this;
     };
     e.prototype.append = function(a, b, c) {
+        if (this._settings.shouldResolveImages()) {
+            this._imagesResolver.scheduleImagesResolve(this._collector.toDOMCollection(a), e.ImagesResolver.OPERATIONS.APPEND, {
+                batchSize: b,
+                batchTimeout: c
+            });
+        } else {
+            this.executeAppend(a, b, c);
+        }
+        return this;
+    };
+    e.prototype.executeAppend = function(a, b, c) {
         this._lifecycleCallbacks.executePreInsertCallbacks(a);
         var d = function() {
             this._operationsQueue.scheduleAppendOperation(a, b, c);
@@ -1137,12 +1162,21 @@
         setTimeout(function() {
             d.call(f);
         }, e.REFLOW_OPTIMIZATION_TIMEOUT);
-        return this;
     };
     e.prototype.silentAppend = function(a, b, c) {
-        this._silentRenderer.scheduleForSilentRender(this._collector.toDOMCollection(a));
-        this.append(a, b, c);
+        if (this._settings.shouldResolveImages()) {
+            this._imagesResolver.scheduleImagesResolve(this._collector.toDOMCollection(a), e.ImagesResolver.OPERATIONS.SILENT_APPEND, {
+                batchSize: b,
+                batchTimeout: c
+            });
+        } else {
+            this.executeSilentAppend(a, b, c);
+        }
         return this;
+    };
+    e.prototype.executeSilentAppend = function(a, b, c) {
+        this._silentRenderer.scheduleForSilentRender(this._collector.toDOMCollection(a));
+        this.executeAppend(a, b, c);
     };
     e.prototype.silentRender = function(a, b, c) {
         this._silentRenderer.execute(a, b, c);
@@ -1150,6 +1184,50 @@
     };
     e.prototype.getScheduledForSilentRenderItems = function(a) {
         return this._silentRenderer.getScheduledForSilentRenderItems(a);
+    };
+    e.prototype.insertBefore = function(a, b, c, d) {
+        if (this._settings.shouldResolveImages()) {
+            this._imagesResolver.scheduleImagesResolve(this._collector.toDOMCollection(a), e.ImagesResolver.OPERATIONS.INSERT_BEFORE, {
+                batchSize: c,
+                batchTimeout: d,
+                beforeItem: b
+            });
+        } else {
+            this.executeInsertBefore(a, b, c, d);
+        }
+        return this;
+    };
+    e.prototype.executeInsertBefore = function(a, b, c, d) {
+        this._lifecycleCallbacks.executePreInsertCallbacks(a);
+        var f = function() {
+            this._operationsQueue.scheduleInsertBeforeOperation(a, b, c, d);
+        };
+        var g = this;
+        setTimeout(function() {
+            f.call(g);
+        }, e.REFLOW_OPTIMIZATION_TIMEOUT);
+    };
+    e.prototype.insertAfter = function(a, b, c, d) {
+        if (this._settings.shouldResolveImages()) {
+            this._imagesResolver.scheduleImagesResolve(this._collector.toDOMCollection(a), e.ImagesResolver.OPERATIONS.INSERT_AFTER, {
+                batchSize: c,
+                batchTimeout: d,
+                afterItem: b
+            });
+        } else {
+            this.executeInsertAfter(a, b, c, d);
+        }
+        return this;
+    };
+    e.prototype.executeInsertAfter = function(a, b, c, d) {
+        this._lifecycleCallbacks.executePreInsertCallbacks(a);
+        var f = function() {
+            this._operationsQueue.scheduleInsertAfterOperation(a, b, c, d);
+        };
+        var g = this;
+        setTimeout(function() {
+            f.call(g);
+        }, e.REFLOW_OPTIMIZATION_TIMEOUT);
     };
     e.prototype.triggerRotate = function(a, b, c, d) {
         var e = this;
@@ -1162,28 +1240,6 @@
         this._operationsQueue.scheduleAsyncFnExecutionByBatches(f, c, d, function(a) {
             e._renderer.rotateItems(a);
         });
-        return this;
-    };
-    e.prototype.insertBefore = function(a, b, c, d) {
-        this._lifecycleCallbacks.executePreInsertCallbacks(a);
-        var f = function() {
-            this._operationsQueue.scheduleInsertBeforeOperation(a, b, c, d);
-        };
-        var g = this;
-        setTimeout(function() {
-            f.call(g);
-        }, e.REFLOW_OPTIMIZATION_TIMEOUT);
-        return this;
-    };
-    e.prototype.insertAfter = function(a, b, c, d) {
-        this._lifecycleCallbacks.executePreInsertCallbacks(a);
-        var f = function() {
-            this._operationsQueue.scheduleInsertAfterOperation(a, b, c, d);
-        };
-        var g = this;
-        setTimeout(function() {
-            f.call(g);
-        }, e.REFLOW_OPTIMIZATION_TIMEOUT);
         return this;
     };
     e.prototype.retransformAllSizes = function() {
@@ -7280,6 +7336,188 @@
             }
         });
     };
+    e.ImagesResolver = function(a) {
+        var b = this;
+        this._gridifier = null;
+        this._batchesToResolve = [];
+        this._alreadyResolved = [];
+        this._construct = function() {
+            b._gridifier = a;
+            b._bindEvents();
+        };
+        this._bindEvents = function() {};
+        this._unbindEvents = function() {
+        };
+        this.destruct = function() {
+            b._unbindEvents();
+        };
+        this._construct();
+        return this;
+    };
+    e.ImagesResolver.OPERATIONS = {
+        APPEND: 0,
+        SILENT_APPEND: 1,
+        PREPEND: 2,
+        INSERT_BEFORE: 3,
+        INSERT_AFTER: 4
+    };
+    e.ImagesResolver.prototype.scheduleImagesResolve = function(a, b, c) {
+        if (a.length == 0) {
+            this._batchesToResolve.push({
+                items: a,
+                images: [],
+                operation: b,
+                data: c
+            });
+            this._emitResolveEvent();
+            return;
+        }
+        var d = this._findImages(a);
+        this._batchesToResolve.push({
+            items: a,
+            images: d,
+            operation: b,
+            data: c
+        });
+        if (d.length == 0) {
+            this._emitResolveEvent();
+            return;
+        }
+        for (var e = 0; e < d.length; e++) d[e].scheduleResolve();
+    };
+    e.ImagesResolver.prototype._findImages = function(a) {
+        var b = [];
+        for (var c = 0; c < a.length; c++) {
+            if (a[c].nodeName == "IMG") {
+                if (!this._isAlreadyResolved(a[c])) b.push(new e.ImagesResolver.ResolvedImage(this, a[c]));
+                continue;
+            }
+            if (!this._isValidNode(a[c])) continue;
+            var d = a[c].querySelectorAll("img");
+            for (var f = 0; f < d.length; f++) {
+                if (!this._isAlreadyResolved(d[f])) b.push(new e.ImagesResolver.ResolvedImage(this, d[f]));
+            }
+        }
+        return b;
+    };
+    e.ImagesResolver.prototype._isAlreadyResolved = function(a) {
+        for (var b = 0; b < this._alreadyResolved.length; b++) {
+            if (this._alreadyResolved[b] === a.src) return true;
+        }
+        if (a.src.length == 0) return true;
+        return false;
+    };
+    e.ImagesResolver.prototype._isValidNode = function(a) {
+        return a.nodeType && (a.nodeType == 1 || a.nodeType == 9 || a.nodeType == 11);
+    };
+    e.ImagesResolver.prototype.onResolve = function(a, b) {
+        this._alreadyResolved.push(b.src);
+        this._emitResolveEvent();
+    };
+    e.ImagesResolver.prototype._emitResolveEvent = function() {
+        for (var a = 0; a < this._batchesToResolve.length; a++) {
+            var b = true;
+            var c = this._batchesToResolve[a].images;
+            for (var d = 0; d < c.length; d++) {
+                if (!c[d].isImageResolved()) {
+                    b = false;
+                    break;
+                }
+            }
+            if (b) {
+                for (var d = 0; d < c.length; d++) c[d].destruct();
+                this._batchesToResolve[a].images = [];
+                var f = this._batchesToResolve[a].items;
+                var g = this._batchesToResolve[a].data;
+                var h = e.ImagesResolver.OPERATIONS;
+                switch (this._batchesToResolve[a].operation) {
+                  case h.APPEND:
+                    this._gridifier.executeAppend(f, g.batchSize, g.batchTimeout);
+                    break;
+
+                  case h.SILENT_APPEND:
+                    this._gridifier.executeSilentAppend(f, g.batchSize, g.batchTimeout);
+                    break;
+
+                  case h.PREPEND:
+                    this._gridifier.executePrepend(f, g.batchSize, g.batchTimeout);
+                    break;
+
+                  case h.INSERT_BEFORE:
+                    this._gridifier.executeInsertBefore(f, g.beforeItem, g.batchSize, g.batchTimeout);
+                    break;
+
+                  case h.INSERT_AFTER:
+                    this._gridifier.executeInsertAfter(f, g.afterItem, g.batchSize, g.batchTimeout);
+                    break;
+
+                  default:
+                    console.log("Gridifier ERROR: Unknown images resolver operation.");
+                    break;
+                }
+                this._batchesToResolve.splice(a, 1);
+                a--;
+            } else {
+                break;
+            }
+        }
+    };
+    e.ImagesResolver.ResolvedImage = function(a, c) {
+        var d = this;
+        this._image = null;
+        this._imagesResolver = null;
+        this._resolvedImage = null;
+        this._isResolved = false;
+        this._loadCallback = null;
+        this._errorCallback = null;
+        this._construct = function() {
+            d._image = c;
+            d._imagesResolver = a;
+        };
+        this._bindEvents = function() {
+            d._loadCallback = function() {
+                d._onLoad.call(d);
+            };
+            d._errorCallback = function() {
+                d._onError.call(d);
+            };
+            b.add(d._resolvedImage, "load", d._loadCallback);
+            b.add(d._resolvedImage, "error", d._errorCallback);
+        };
+        this._unbindEvents = function() {
+            b.remove(d._resolvedImage, "load", d._loadCallback);
+            b.remove(d._resolvedImage, "error", d._errorCallback);
+        };
+        this.destruct = function() {
+            d._unbindEvents();
+        };
+        this._construct();
+        return this;
+    };
+    e.ImagesResolver.ResolvedImage.prototype.scheduleResolve = function() {
+        if (this._isAlreadyResolved()) {
+            this._isResolved = true;
+            this._imagesResolver.onResolve(this, this._image);
+            return;
+        }
+        this._resolvedImage = new Image();
+        this._bindEvents();
+        this._resolvedImage.src = this._image.src;
+    };
+    e.ImagesResolver.ResolvedImage.prototype.isImageResolved = function() {
+        return this._isResolved;
+    };
+    e.ImagesResolver.ResolvedImage.prototype._isAlreadyResolved = function() {
+        return this._image.complete && this._image.naturalWidth !== undefined && this._image.naturalWidth !== 0;
+    };
+    e.ImagesResolver.ResolvedImage.prototype._onLoad = function() {
+        this._isResolved = true;
+        this._imagesResolver.onResolve(this, this._image);
+    };
+    e.ImagesResolver.ResolvedImage.prototype._onError = function() {
+        this._isResolved = true;
+        this._imagesResolver.onResolve(this, this._image);
+    };
     e.Operations.Append = function(a, b, c, d, e, f, g, h, i, j, k) {
         var l = this;
         this._gridSizesUpdater = null;
@@ -7317,6 +7555,7 @@
     };
     e.Operations.Append.prototype.execute = function(a) {
         var a = this._collector.filterOnlyNotConnectedItems(this._collector.toDOMCollection(a));
+        if (a.length == 0) return;
         this._sizesResolverManager.startCachingTransaction();
         this._collector.ensureAllItemsAreAttachedToGrid(a);
         this._collector.ensureAllItemsCanBeAttachedToGrid(a);
@@ -7340,6 +7579,8 @@
         }
     };
     e.Operations.Append.prototype.executeInsertBefore = function(a, b) {
+        var a = this._collector.filterOnlyNotConnectedItems(this._collector.toDOMCollection(a));
+        if (a.length == 0) return;
         var c = this._connections.get();
         if (c.length == 0) {
             this.execute(a);
@@ -7381,6 +7622,8 @@
         this._sizesTransformer.retransformFrom(d[0]);
     };
     e.Operations.Append.prototype.executeInsertAfter = function(a, b) {
+        var a = this._collector.filterOnlyNotConnectedItems(this._collector.toDOMCollection(a));
+        if (a.length == 0) return;
         var c = this._connections.get();
         if (c.length == 0) {
             this.execute(a);
@@ -7452,6 +7695,7 @@
     };
     e.Operations.Prepend.prototype.execute = function(a) {
         var a = this._collector.filterOnlyNotConnectedItems(this._collector.toDOMCollection(a));
+        if (a.length == 0) return;
         this._sizesResolverManager.startCachingTransaction();
         this._collector.ensureAllItemsAreAttachedToGrid(a);
         this._collector.ensureAllItemsCanBeAttachedToGrid(a);
@@ -8713,6 +8957,10 @@
         if (!this._settings.hasOwnProperty("repackSize")) return null;
         return this._settings.repackSize;
     };
+    e.CoreSettingsParser.prototype.parseResolveImages = function() {
+        if (!this._settings.hasOwnProperty("resolveImages")) return false;
+        return this._settings.resolveImages;
+    };
     e.Settings = function(a, b, c, d, f) {
         var g = this;
         this._settings = null;
@@ -8758,6 +9006,7 @@
         this._retransformQueueBatchTimeout = null;
         this._disableRetransformQueueOnDrags = false;
         this._repackSize = null;
+        this._resolveImages = false;
         this._css = {};
         this._construct = function() {
             g._settings = a;
@@ -8826,6 +9075,7 @@
         this._dragifierItemSelector = b.dragifierItemSelector;
         this._disableRetransformQueueOnDrags = this._coreSettingsParser.parseDisableRetransformQueueOnDrags();
         this._repackSize = this._coreSettingsParser.parseCustomRepackSize();
+        this._resolveImages = this._coreSettingsParser.parseResolveImages();
         var c = this;
         this._gridifier.setDefaultPrepend = function() {
             c.setDefaultPrepend.call(c);
@@ -9123,6 +9373,9 @@
     };
     e.Settings.prototype.getCustomRepackSize = function() {
         return this._repackSize;
+    };
+    e.Settings.prototype.shouldResolveImages = function() {
+        return this._resolveImages;
     };
     e.SizesTransformer.EmptySpaceNormalizer = function(a, b, c) {
         var d = this;

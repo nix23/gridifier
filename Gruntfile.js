@@ -101,6 +101,14 @@ module.exports = function(grunt) {
         core + "grid/grid.js", // Required
         core + "grid/gridSizesUpdater.js", // Required
 
+        // Images Resolver
+        // This classes are required for images resolving.
+        // (Insert operations will wait while all item images are loaded)
+        // Read http://gridifier.io/grids/insert-types.
+        // If you aren't using image elements with dynamic sizes, you can comment out next 2 lines.
+        core + "imagesResolver/imagesResolver.js", // Optional
+        core + "imagesResolver/resolvedImage.js", // Optional
+
         // Operations
         core + "operations/append.js", // Required
         core + "operations/prepend.js", // Required
@@ -134,7 +142,7 @@ module.exports = function(grunt) {
 
         // Horizontal grid 
         // This classes are required per horizontal grids.
-        // Read http://gridifier.io/grid-types.
+        // Read http://gridifier.io/grids/grid-types.
         // If you are using only vertical grids, you can comment out next 13 lines.
         core + "horizontalGrid/appender.js", // Optional
         core + "horizontalGrid/itemCoordsExtractor.js", // Optional
@@ -152,7 +160,7 @@ module.exports = function(grunt) {
 
         // Vertical grid 
         // This classes are required per vertical grids.
-        // Read http://gridifier.io/grid-types.
+        // Read http://gridifier.io/grids/grid-types.
         // If you are using only horizontal grids, you can comment out next 13 lines.
         core + "verticalGrid/appender.js", // Optional
         core + "verticalGrid/itemCoordsExtractor.js", // Optional

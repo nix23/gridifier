@@ -104,11 +104,6 @@ Gridifier.Dragifier.ConnectionIntersectionDraggableItem.prototype._initDraggable
 Gridifier.Dragifier.ConnectionIntersectionDraggableItem.prototype._hideDraggableItem = function() {
     this._draggableItem.style.visibility = "hidden";
     this._draggableItem.setAttribute(Gridifier.Dragifier.IS_DRAGGABLE_ITEM_DATA_ATTR, "yes");
-    var a = this._gridifier.getItemClonesManager();
-    if (a.hasBindedClone(this._draggableItem)) {
-        var b = a.getBindedClone(this._draggableItem);
-        b.style.visibility = "hidden";
-    }
 };
 
 Gridifier.Dragifier.ConnectionIntersectionDraggableItem.prototype.processDragMove = function(a, b) {

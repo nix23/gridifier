@@ -9,8 +9,8 @@
  * Copyright 2015 nTech
  */
 
-Gridifier.SizesTransformer.ItemsReappender = function(a, b, c, d, e, f, g, h, i, j, k, l, m, n) {
-    var o = this;
+Gridifier.SizesTransformer.ItemsReappender = function(a, b, c, d, e, f, g, h, i, j, k, l) {
+    var m = this;
     this._gridifier = null;
     this._appender = null;
     this._reversedAppender = null;
@@ -21,8 +21,6 @@ Gridifier.SizesTransformer.ItemsReappender = function(a, b, c, d, e, f, g, h, i,
     this._transformerConnectors = null;
     this._settings = null;
     this._guid = null;
-    this._transformedItemMarker = null;
-    this._emptySpaceNormalizer = null;
     this._sizesResolverManager = null;
     this._eventEmitter = null;
     this._reappendQueue = null;
@@ -34,25 +32,23 @@ Gridifier.SizesTransformer.ItemsReappender = function(a, b, c, d, e, f, g, h, i,
     this._reappendStartViewportHeight = null;
     this._css = {};
     this._construct = function() {
-        o._gridifier = a;
-        o._appender = b;
-        o._reversedAppender = c;
-        o._connections = d;
-        o._connectors = e;
-        o._connectorsCleaner = f;
-        o._connectorsSelector = g;
-        o._transformerConnectors = h;
-        o._settings = i;
-        o._guid = j;
-        o._transformedItemMarker = k;
-        o._emptySpaceNormalizer = l;
-        o._sizesResolverManager = m;
-        o._eventEmitter = n;
+        m._gridifier = a;
+        m._appender = b;
+        m._reversedAppender = c;
+        m._connections = d;
+        m._connectors = e;
+        m._connectorsCleaner = f;
+        m._connectorsSelector = g;
+        m._transformerConnectors = h;
+        m._settings = i;
+        m._guid = j;
+        m._sizesResolverManager = k;
+        m._eventEmitter = l;
     };
     this._bindEvents = function() {};
     this._unbindEvents = function() {};
     this.destruct = function() {
-        o._unbindEvents();
+        m._unbindEvents();
     };
     this._construct();
     return this;

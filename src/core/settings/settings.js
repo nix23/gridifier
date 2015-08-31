@@ -32,7 +32,6 @@ Gridifier.Settings = function(a, b, c, d, e) {
     this._sortApi = null;
     this._filterApi = null;
     this._coordsChangerApi = null;
-    this._sizesChangerApi = null;
     this._dragifierApi = null;
     this._resizeTimeout = null;
     this._gridItemMarkingStrategyType = null;
@@ -69,7 +68,6 @@ Gridifier.Settings = function(a, b, c, d, e) {
         f._sortApi = new Gridifier.Api.Sort(f, f._gridifier, f._eventEmitter);
         f._filterApi = new Gridifier.Api.Filter(f, f._eventEmitter);
         f._coordsChangerApi = new Gridifier.Api.CoordsChanger(f, f._gridifier, f._eventEmitter);
-        f._sizesChangerApi = new Gridifier.Api.SizesChanger(f, f._eventEmitter);
         f._dragifierApi = new Gridifier.Api.Dragifier();
         f._parse();
     };
@@ -114,7 +112,6 @@ Gridifier.Settings.prototype._parse = function() {
     this._apiSettingsParser.parseRetransformSortOptions(this._sortApi);
     this._apiSettingsParser.parseFilterOptions(this._filterApi);
     this._apiSettingsParser.parseCoordsChangerOptions(this._coordsChangerApi);
-    this._apiSettingsParser.parseSizesChangerOptions(this._sizesChangerApi);
     this._apiSettingsParser.parseDraggableItemDecoratorOptions(this._dragifierApi);
     var a = this._coreSettingsParser.parseGridItemMarkingStrategy();
     this._gridItemMarkingStrategyType = a.gridItemMarkingStrategyType;
@@ -429,20 +426,12 @@ Gridifier.Settings.prototype.setCoordsChanger = function(a) {
     this._coordsChangerApi.setCoordsChangerFunction(a);
 };
 
-Gridifier.Settings.prototype.setSizesChanger = function(a) {
-    this._sizesChangerApi.setSizesChangerFunction(a);
-};
-
 Gridifier.Settings.prototype.setDraggableItemDecorator = function(a) {
     this._dragifierApi.setDraggableItemDecoratorFunction(a);
 };
 
 Gridifier.Settings.prototype.getCoordsChanger = function() {
     return this._coordsChangerApi.getCoordsChangerFunction();
-};
-
-Gridifier.Settings.prototype.getSizesChanger = function() {
-    return this._sizesChangerApi.getSizesChangerFunction();
 };
 
 Gridifier.Settings.prototype.getDraggableItemDecorator = function() {

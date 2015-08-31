@@ -67,142 +67,68 @@ Gridifier.Operations.Queue.PROCESS_QUEUED_OPERATIONS_TIMEOUT = 100;
 
 Gridifier.Operations.Queue.DEFAULT_BATCH_TIMEOUT = 100;
 
-Gridifier.Operations.Queue.prototype.schedulePrependOperation = function(a, b, c) {
-    var d = this;
-    var e = function(a) {
+Gridifier.Operations.Queue.prototype._scheduleOperation = function(a, b, c, d, e, f) {
+    var g = this;
+    var h = function(a, b) {
         setTimeout(function() {
-            if (d._sizesTransformer.isTransformerQueueEmpty()) {
-                d._executePrependOperation.call(d, a);
+            if (g._sizesTransformer.isTransformerQueueEmpty()) {
+                e(a, b);
             } else {
-                d._queuedOperations.push({
-                    queuedOperationType: Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.PREPEND,
-                    items: a
+                g._queuedOperations.push({
+                    queuedOperationType: f,
+                    items: a,
+                    beforeItem: b,
+                    afterItem: b
                 });
-                if (d._isWaitingForTransformerQueueRelease) return;
+                if (g._isWaitingForTransformerQueueRelease) return;
                 setTimeout(function() {
-                    d._isWaitingForTransformerQueueRelease = true;
-                    d._processQueuedOperations.call(d);
+                    g._isWaitingForTransformerQueueRelease = true;
+                    g._processQueuedOperations.call(g);
                 }, Gridifier.Operations.Queue.PROCESS_QUEUED_OPERATIONS_TIMEOUT);
             }
         }, 0);
     };
-    if (typeof b == "undefined") {
-        e.call(d, a);
+    if (typeof c == "undefined") {
+        h.call(g, a, b);
         return;
     }
-    var c = c || Gridifier.Operations.Queue.DEFAULT_BATCH_TIMEOUT;
-    var f = this._packItemsToBatches(a, b);
-    for (var g = 0; g < f.length; g++) {
-        (function(a, b) {
+    var d = d || Gridifier.Operations.Queue.DEFAULT_BATCH_TIMEOUT;
+    var i = this._packItemsToBatches(a, c);
+    for (var j = 0; j < i.length; j++) {
+        (function(a, c) {
             setTimeout(function() {
-                e.call(d, a);
-            }, c * b);
-        })(f[g], g);
+                h.call(g, a, b);
+            }, d * c);
+        })(i[j], j);
     }
+};
+
+Gridifier.Operations.Queue.prototype.schedulePrependOperation = function(a, b, c) {
+    var d = this;
+    this._scheduleOperation(a, null, b, c, function(a) {
+        d._executePrependOperation.call(d, a);
+    }, Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.PREPEND);
 };
 
 Gridifier.Operations.Queue.prototype.scheduleAppendOperation = function(a, b, c) {
     var d = this;
-    var e = function(a) {
-        setTimeout(function() {
-            if (d._sizesTransformer.isTransformerQueueEmpty()) {
-                d._executeAppendOperation.call(d, a);
-            } else {
-                d._queuedOperations.push({
-                    queuedOperationType: Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.APPEND,
-                    items: a
-                });
-                if (d._isWaitingForTransformerQueueRelease) return;
-                setTimeout(function() {
-                    d._isWaitingForTransformerQueueRelease = true;
-                    d._processQueuedOperations.call(d);
-                }, Gridifier.Operations.Queue.PROCESS_QUEUED_OPERATIONS_TIMEOUT);
-            }
-        }, 0);
-    };
-    if (typeof b == "undefined") {
-        e.call(d, a);
-        return;
-    }
-    var c = c || Gridifier.Operations.Queue.DEFAULT_BATCH_TIMEOUT;
-    var f = this._packItemsToBatches(a, b);
-    for (var g = 0; g < f.length; g++) {
-        (function(a, b) {
-            setTimeout(function() {
-                e.call(d, a);
-            }, c * b);
-        })(f[g], g);
-    }
+    this._scheduleOperation(a, null, b, c, function(a) {
+        d._executeAppendOperation.call(d, a);
+    }, Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.APPEND);
 };
 
 Gridifier.Operations.Queue.prototype.scheduleInsertBeforeOperation = function(a, b, c, d) {
     var e = this;
-    var f = function(a, b) {
-        setTimeout(function() {
-            if (e._sizesTransformer.isTransformerQueueEmpty()) {
-                e._executeInsertBeforeOperation.call(e, a, b);
-            } else {
-                e._queuedOperations.push({
-                    queuedOperationType: Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.INSERT_BEFORE,
-                    items: a,
-                    beforeItem: b
-                });
-                if (e._isWaitingForTransformerQueueRelease) return;
-                setTimeout(function() {
-                    e._isWaitingForTransformerQueueRelease = true;
-                    e._processQueuedOperations.call(e);
-                }, Gridifier.Operations.Queue.PROCESS_QUEUED_OPERATIONS_TIMEOUT);
-            }
-        }, 0);
-    };
-    if (typeof c == "undefined") {
-        f.call(e, a, b);
-        return;
-    }
-    var d = d || Gridifier.Operations.Queue.DEFAULT_BATCH_TIMEOUT;
-    var g = this._packItemsToBatches(a, c);
-    for (var h = 0; h < g.length; h++) {
-        (function(a, c) {
-            setTimeout(function() {
-                f.call(e, a, b);
-            }, d * c);
-        })(g[h], h);
-    }
+    this._scheduleOperation(a, b, c, d, function(a, b) {
+        e._executeInsertBeforeOperation.call(e, a, b);
+    }, Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.INSERT_BEFORE);
 };
 
 Gridifier.Operations.Queue.prototype.scheduleInsertAfterOperation = function(a, b, c, d) {
     var e = this;
-    var f = function(a, b) {
-        setTimeout(function() {
-            if (e._sizesTransformer.isTransformerQueueEmpty()) {
-                e._executeInsertAfterOperation.call(e, a, b);
-            } else {
-                e._queuedOperations.push({
-                    queuedOperationType: Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.INSERT_AFTER,
-                    items: a,
-                    afterItem: b
-                });
-                if (e._isWaitingForTransformerQueueRelease) return;
-                setTimeout(function() {
-                    e._isWaitingForTransformerQueueRelease = true;
-                    e._processQueuedOperations.call(e);
-                }, Gridifier.Operations.Queue.PROCESS_QUEUED_OPERATIONS_TIMEOUT);
-            }
-        }, 0);
-    };
-    if (typeof c == "undefined") {
-        f.call(e, a, b);
-        return;
-    }
-    var d = d || Gridifier.Operations.Queue.DEFAULT_BATCH_TIMEOUT;
-    var g = this._packItemsToBatches(a, c);
-    for (var h = 0; h < g.length; h++) {
-        (function(a, c) {
-            setTimeout(function() {
-                f.call(e, a, b);
-            }, d * c);
-        })(g[h], h);
-    }
+    this._scheduleOperation(a, b, c, d, function(a, b) {
+        e._executeInsertAfterOperation.call(e, a, b);
+    }, Gridifier.Operations.Queue.QUEUED_OPERATION_TYPES.INSERT_AFTER);
 };
 
 Gridifier.Operations.Queue.prototype._packItemsToBatches = function(a, b) {

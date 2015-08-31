@@ -98,8 +98,8 @@ Gridifier.Normalizer.prototype.bindZIndexesUpdates = function() {
     if (!this._areZIndexesUpdatesEnabled || this._areZIndexesUpdatesBinded) return;
     var a = this;
     var b = null;
-    this._gridifier.onConnectionCreate(function(c) {
-        var d = function() {
+    this._gridifier.onConnectionCreate(function(a) {
+        var c = function() {
             var b = function(a) {
                 for (var b = 0; b < a.length; b++) {
                     a[b].tmpWidth = Math.abs(a[b].x2 - a[b].x1) + 1;
@@ -109,11 +109,11 @@ Gridifier.Normalizer.prototype.bindZIndexesUpdates = function() {
                     a[b].tmpArea = Math.round(a[b].tmpWidth * a[b].tmpHeight);
                 }
             };
-            var d = -1;
-            var e = function(a, b) {
-                if (a.tmpArea > b.tmpArea) return -1 * d; else if (a.tmpArea < b.tmpArea) return 1 * d; else if (a.tmpArea == b.tmpArea) return 0;
+            var c = -1;
+            var d = function(a, b) {
+                if (a.tmpArea > b.tmpArea) return -1 * c; else if (a.tmpArea < b.tmpArea) return 1 * c; else if (a.tmpArea == b.tmpArea) return 0;
             };
-            var f = function(a) {
+            var e = function(a) {
                 var b = {};
                 for (var c = 0; c < a.length; c++) {
                     if (typeof b[a[c].tmpArea] == "undefined") {
@@ -123,29 +123,25 @@ Gridifier.Normalizer.prototype.bindZIndexesUpdates = function() {
                 }
                 return b;
             };
-            var g = c.get();
-            b(g);
-            g.sort(e);
-            var h = f(g);
-            var i = c.getConnectionsSorter();
-            var j = [];
-            for (var k in h) {
-                h[k] = i.sortConnectionsPerReappend(h[k]);
-                j.push(k);
+            var f = a.get();
+            b(f);
+            f.sort(d);
+            var g = e(f);
+            var h = a.getConnectionsSorter();
+            var i = [];
+            for (var j in g) {
+                g[j] = h.sortConnectionsPerReappend(g[j]);
+                i.push(j);
             }
-            j.sort(function(a, b) {
-                if (Dom.toInt(a) > Dom.toInt(b)) return -1 * d; else if (Dom.toInt(a) < Dom.toInt(b)) return 1 * d; else if (Dom.toInt(a) == Dom.toInt(b)) return 0;
+            i.sort(function(a, b) {
+                if (Dom.toInt(a) > Dom.toInt(b)) return -1 * c; else if (Dom.toInt(a) < Dom.toInt(b)) return 1 * c; else if (Dom.toInt(a) == Dom.toInt(b)) return 0;
             });
-            var l = 1;
-            for (var m = 0; m < j.length; m++) {
-                for (var n = 0; n < h[j[m]].length; n++) {
-                    var o = h[j[m]][n];
-                    o.item.style.zIndex = l;
-                    if (a._gridifier.hasItemBindedClone(o.item)) {
-                        var p = a._gridifier.getItemClone(o.item);
-                        p.style.zIndex = l - 1;
-                    }
-                    l++;
+            var k = 1;
+            for (var l = 0; l < i.length; l++) {
+                for (var m = 0; m < g[i[l]].length; m++) {
+                    var n = g[i[l]][m];
+                    n.item.style.zIndex = k;
+                    k++;
                 }
             }
         };
@@ -154,7 +150,7 @@ Gridifier.Normalizer.prototype.bindZIndexesUpdates = function() {
             b = null;
         }
         b = setTimeout(function() {
-            d();
+            c();
         }, 100);
     });
     this._areZIndexesUpdatesBinded = true;

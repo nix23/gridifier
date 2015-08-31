@@ -167,34 +167,6 @@ Gridifier.ApiSettingsParser.prototype.parseCoordsChangerOptions = function(a) {
     }
 };
 
-Gridifier.ApiSettingsParser.prototype.parseSizesChangerOptions = function(a) {
-    if (!this._settings.hasOwnProperty("sizesChanger")) {
-        a.setSizesChangerFunction("default");
-        return;
-    }
-    if (typeof this._settings.sizesChanger == "string" || this._settings.sizesChanger instanceof String) {
-        a.setSizesChangerFunction(this._settings.sizesChanger);
-        return;
-    } else if (typeof this._settings.sizesChanger == "function") {
-        a.addSizesChangerFunction("clientDefault", this._settings.sizesChanger);
-        a.setSizesChangerFunction("clientDefault");
-        return;
-    } else if (typeof this._settings.sizesChanger == "object") {
-        for (var b in this._settings.sizesChanger) {
-            if (b == Gridifier.ApiSettingsParser.INITIAL_SETTING_MARKER) continue;
-            var c = this._settings.sizesChanger[b];
-            if (typeof c != "function") {
-                new Gridifier.Error(Gridifier.Error.ERROR_TYPES.SETTINGS.INVALID_ONE_OF_SIZES_CHANGER_FUNCTION_TYPES, c);
-            }
-            a.addSizesChangerFunction(b, c);
-        }
-        if (this._settings.sizesChanger.hasOwnProperty(Gridifier.ApiSettingsParser.INITIAL_SETTING_MARKER)) a.setSizesChangerFunction(this._settings.sizesChanger[Gridifier.ApiSettingsParser.INITIAL_SETTING_MARKER]); else a.setSizesChangerFunction("default");
-        return;
-    } else {
-        new Gridifier.Error(Gridifier.Error.ERROR_TYPES.SETTINGS.INVALID_SIZES_CHANGER_PARAM_VALUE, this._settings.sizesChanger);
-    }
-};
-
 Gridifier.ApiSettingsParser.prototype.parseDraggableItemDecoratorOptions = function(a) {
     if (!this._settings.hasOwnProperty("draggableItemDecorator") && !this._settings.hasOwnProperty("dragDecorator")) {
         a.setDraggableItemDecoratorFunction("cloneCSS");

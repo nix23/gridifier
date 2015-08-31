@@ -9,8 +9,8 @@
  * Copyright 2015 nTech
  */
 
-Gridifier.TransformerConnectors = function(a, b, c, d, e, f, g, h, i, j, k, l) {
-    var m = this;
+Gridifier.TransformerConnectors = function(a, b, c, d, e, f, g, h, i, j, k) {
+    var l = this;
     this._gridifier = null;
     this._settings = null;
     this._connectors = null;
@@ -21,28 +21,26 @@ Gridifier.TransformerConnectors = function(a, b, c, d, e, f, g, h, i, j, k, l) {
     this._normalizer = null;
     this._sizesTransformer = null;
     this._connectorsCleaner = null;
-    this._transformedItemMarker = null;
     this._itemsReappender = null;
     this._operation = null;
     this._css = {};
     this._construct = function() {
-        m._gridifier = a;
-        m._settings = b;
-        m._connectors = c;
-        m._connections = d;
-        m._guid = e;
-        m._appender = f;
-        m._reversedAppender = g;
-        m._normalizer = h;
-        m._sizesTransformer = i;
-        m._connectorsCleaner = j;
-        m._transformedItemMarker = k;
-        m._operation = l;
+        l._gridifier = a;
+        l._settings = b;
+        l._connectors = c;
+        l._connections = d;
+        l._guid = e;
+        l._appender = f;
+        l._reversedAppender = g;
+        l._normalizer = h;
+        l._sizesTransformer = i;
+        l._connectorsCleaner = j;
+        l._operation = k;
     };
     this._bindEvents = function() {};
     this._unbindEvents = function() {};
     this.destruct = function() {
-        m._unbindEvents();
+        l._unbindEvents();
     };
     this._construct();
     return this;

@@ -43,7 +43,7 @@ Gridifier.ApiSettingsErrors.prototype._parseIfIsApiSettingsError = function(a) {
     if (a == b.INVALID_ONE_OF_TOGGLE_PARAMS) {
         this._markAsApiSettingsError();
         this._invalidOneOfToggleParamsError();
-    } else if (a == b.INVALID_ONE_OF_SORT_FUNCTION_TYPES || a == b.INVALID_ONE_OF_RETRANSFORM_SORT_FUNCTION_TYPES || a == b.INVALID_ONE_OF_FILTER_FUNCTION_TYPES || a == b.INVALID_ONE_OF_COORDS_CHANGER_FUNCTION_TYPES || a == b.INVALID_ONE_OF_SIZES_CHANGER_FUNCTION_TYPES || a == b.INVALID_ONE_OF_DRAGGABLE_ITEM_DECORATOR_FUNCTION_TYPES) {
+    } else if (a == b.INVALID_ONE_OF_SORT_FUNCTION_TYPES || a == b.INVALID_ONE_OF_RETRANSFORM_SORT_FUNCTION_TYPES || a == b.INVALID_ONE_OF_FILTER_FUNCTION_TYPES || a == b.INVALID_ONE_OF_COORDS_CHANGER_FUNCTION_TYPES || a == b.INVALID_ONE_OF_DRAGGABLE_ITEM_DECORATOR_FUNCTION_TYPES) {
         this._markAsApiSettingsError();
         if (a == b.INVALID_ONE_OF_SORT_FUNCTION_TYPES) {
             var c = "sort";
@@ -53,13 +53,11 @@ Gridifier.ApiSettingsErrors.prototype._parseIfIsApiSettingsError = function(a) {
             var c = "filter";
         } else if (a == b.INVALID_ONE_OF_COORDS_CHANGER_FUNCTION_TYPES) {
             var c = "coordsChanger";
-        } else if (a == b.INVALID_ONE_OF_SIZES_CHANGER_FUNCTION_TYPES) {
-            var c = "sizesChanger";
         } else if (a == b.INVALID_ONE_OF_DRAGGABLE_ITEM_DECORATOR_FUNCTION_TYPES) {
             var c = "draggableItemDecorator";
         }
         this._invalidOneOfFunctionTypesError(c);
-    } else if (a == b.INVALID_TOGGLE_PARAM_VALUE || a == b.INVALID_SORT_PARAM_VALUE || a == b.INVALID_RETRANSFORM_SORT_PARAM_VALUE || a == b.INVALID_FILTER_PARAM_VALUE || a == b.INVALID_COORDS_CHANGER_PARAM_VALUE || a == b.INVALID_SIZES_CHANGER_PARAM_VALUE || a == b.INVALID_DRAGGABLE_ITEM_DECORATOR_PARAM_VALUE) {
+    } else if (a == b.INVALID_TOGGLE_PARAM_VALUE || a == b.INVALID_SORT_PARAM_VALUE || a == b.INVALID_RETRANSFORM_SORT_PARAM_VALUE || a == b.INVALID_FILTER_PARAM_VALUE || a == b.INVALID_COORDS_CHANGER_PARAM_VALUE || a == b.INVALID_DRAGGABLE_ITEM_DECORATOR_PARAM_VALUE) {
         this._markAsApiSettingsError();
         if (a == b.INVALID_TOGGLE_PARAM_VALUE) {
             var c = "toggle";
@@ -71,13 +69,11 @@ Gridifier.ApiSettingsErrors.prototype._parseIfIsApiSettingsError = function(a) {
             var c = "filter";
         } else if (a == b.INVALID_COORDS_CHANGER_PARAM_VALUE) {
             var c = "coordsChanger";
-        } else if (a == b.INVALID_SIZES_CHANGER_PARAM_VALUE) {
-            var c = "sizesChanger";
         } else if (a == b.INVALID_DRAGGABLE_ITEM_DECORATOR_PARAM_VALUE) {
             var c = "draggableItemDecorator";
         }
         this._invalidParamValueError(c);
-    } else if (a == b.SET_TOGGLE_INVALID_PARAM || a == b.SET_FILTER_INVALID_PARAM || a == b.SET_SORT_INVALID_PARAM || a == b.SET_RETRANSFORM_SORT_INVALID_PARAM || a == b.SET_COORDS_CHANGER_INVALID_PARAM || a == b.SET_SIZES_CHANGER_INVALID_PARAM || a == b.SET_DRAGGABLE_ITEM_DECORATOR_INVALID_PARAM) {
+    } else if (a == b.SET_TOGGLE_INVALID_PARAM || a == b.SET_FILTER_INVALID_PARAM || a == b.SET_SORT_INVALID_PARAM || a == b.SET_RETRANSFORM_SORT_INVALID_PARAM || a == b.SET_COORDS_CHANGER_INVALID_PARAM || a == b.SET_DRAGGABLE_ITEM_DECORATOR_INVALID_PARAM) {
         this._markAsApiSettingsError();
         if (a == b.SET_TOGGLE_INVALID_PARAM) {
             var d = "toggle";
@@ -89,8 +85,6 @@ Gridifier.ApiSettingsErrors.prototype._parseIfIsApiSettingsError = function(a) {
             var d = "retransformSort";
         } else if (a == b.SET_COORDS_CHANGER_INVALID_PARAM) {
             var d = "coordsChanger";
-        } else if (a == b.SET_SIZES_CHANGER_INVALID_PARAM) {
-            var d = "sizesChanger";
         } else if (a == b.SET_DRAGGABLE_ITEM_DECORATOR_INVALID_PARAM) {
             var d = "draggableItemDecorator";
         }

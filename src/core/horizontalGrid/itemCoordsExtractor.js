@@ -13,12 +13,10 @@ Gridifier.HorizontalGrid.ItemCoordsExtractor = function(a, b) {
     var c = this;
     this._gridifier = null;
     this._sizesResolverManager = null;
-    this._transformedItemMarker = null;
     this._css = {};
     this._construct = function() {
         c._gridifier = a;
         c._sizesResolverManager = b;
-        c._transformedItemMarker = new Gridifier.SizesTransformer.TransformedItemMarker();
     };
     this._bindEvents = function() {};
     this._unbindEvents = function() {};
@@ -30,18 +28,10 @@ Gridifier.HorizontalGrid.ItemCoordsExtractor = function(a, b) {
 };
 
 Gridifier.HorizontalGrid.ItemCoordsExtractor.prototype._getItemSizesPerAppend = function(a) {
-    if (this._transformedItemMarker.isTransformedItem(a)) {
-        var b = this._transformedItemMarker.getTransformedItemTargetPxSizes(a);
-        return {
-            targetWidth: parseFloat(b.targetPxWidth),
-            targetHeight: parseFloat(b.targetPxHeight)
-        };
-    } else {
-        return {
-            targetWidth: this._sizesResolverManager.outerWidth(a, true),
-            targetHeight: this._sizesResolverManager.outerHeight(a, true)
-        };
-    }
+    return {
+        targetWidth: this._sizesResolverManager.outerWidth(a, true),
+        targetHeight: this._sizesResolverManager.outerHeight(a, true)
+    };
 };
 
 Gridifier.HorizontalGrid.ItemCoordsExtractor.prototype.getItemTargetSizes = function(a) {

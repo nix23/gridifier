@@ -1,10 +1,20 @@
 body {
+    width: 100%;
+    height: 100%;
+    background: red;
     overflow-x: hidden;
     overflow-y: scroll;
 }
 
-.grid {
+.gridWrapper {
+    width: 100%;
+    height: 100%;
+    background: blue;
     overflow: hidden;
+}
+
+.grid {
+
 }
 
 .grid > img {

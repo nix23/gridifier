@@ -27,12 +27,8 @@ Gridifier.SizesTransformer.Core = function(a, b, c, d, e, f, g, h, i, j, k, l, m
     this._connectorsCleaner = null;
     this._connectorsSelector = null;
     this._transformerConnectors = null;
-    this._transformedConnectionsSorter = null;
-    this._itemNewPxSizesFinder = null;
-    this._transformedItemMarker = null;
     this._itemsToReappendFinder = null;
     this._itemsReappender = null;
-    this._emptySpaceNormalizer = null;
     this._css = {};
     this._construct = function() {
         n._gridifier = a;
@@ -54,13 +50,9 @@ Gridifier.SizesTransformer.Core = function(a, b, c, d, e, f, g, h, i, j, k, l, m
             n._connectorsCleaner = new Gridifier.HorizontalGrid.ConnectorsCleaner(n._connectors, n._connections, n._settings);
         }
         n._connectorsSelector = new Gridifier.VerticalGrid.ConnectorsSelector(n._guid);
-        n._transformedConnectionsSorter = new Gridifier.SizesTransformer.TransformedConnectionsSorter(n._connectionsSorter);
-        n._itemNewPxSizesFinder = new Gridifier.SizesTransformer.ItemNewPxSizesFinder(n._gridifier, n._collector, n._connections, n._sizesResolverManager);
-        n._transformedItemMarker = new Gridifier.SizesTransformer.TransformedItemMarker();
         n._itemsToReappendFinder = new Gridifier.SizesTransformer.ItemsToReappendFinder(n._connections, n._connectionsSorter, n._settings);
-        n._transformerConnectors = new Gridifier.TransformerConnectors(n._gridifier, n._settings, n._connectors, n._connections, n._guid, n._appender, n._reversedAppender, n._normalizer, n, n._connectorsCleaner, n._transformedItemMarker, n._operation);
-        n._emptySpaceNormalizer = new Gridifier.SizesTransformer.EmptySpaceNormalizer(n._connections, n._connectors, n._settings);
-        n._itemsReappender = new Gridifier.SizesTransformer.ItemsReappender(n._gridifier, n._appender, n._reversedAppender, n._connections, n._connectors, n._connectorsCleaner, n._connectorsSelector, n._transformerConnectors, n._settings, n._guid, n._transformedItemMarker, n._emptySpaceNormalizer, n._sizesResolverManager, n._eventEmitter);
+        n._transformerConnectors = new Gridifier.TransformerConnectors(n._gridifier, n._settings, n._connectors, n._connections, n._guid, n._appender, n._reversedAppender, n._normalizer, n, n._connectorsCleaner, n._operation);
+        n._itemsReappender = new Gridifier.SizesTransformer.ItemsReappender(n._gridifier, n._appender, n._reversedAppender, n._connections, n._connectors, n._connectorsCleaner, n._connectorsSelector, n._transformerConnectors, n._settings, n._guid, n._sizesResolverManager, n._eventEmitter);
         n._transformerConnectors.setItemsReappenderInstance(n._itemsReappender);
     };
     this._bindEvents = function() {};
@@ -80,36 +72,6 @@ Gridifier.SizesTransformer.Core.prototype.isTransformerQueueEmpty = function() {
 
 Gridifier.SizesTransformer.Core.prototype.getQueuedConnectionsPerTransform = function() {
     return this._itemsReappender.getQueuedConnectionsPerTransform();
-};
-
-Gridifier.SizesTransformer.Core.prototype.transformConnectionSizes = function(a) {
-    a = this._transformedConnectionsSorter.sortTransformedConnections(a);
-    a = this._itemNewPxSizesFinder.calculateNewPxSizesPerAllTransformedItems(a);
-    var b = function() {
-        this._guid.unmarkAllPrependedItems();
-        this._transformedItemMarker.markEachConnectionItemWithTransformData(a);
-        var b = [];
-        if (!this._itemsReappender.isReappendQueueEmpty()) {
-            var c = this._itemsReappender.stopReappendingQueuedItems();
-            for (var d = 0; d < c.reappendQueue.length; d++) {
-                var e = c.reappendQueue[d].connectionToReappend;
-                if (e[Gridifier.SizesTransformer.RESTRICT_CONNECTION_COLLECT]) continue;
-                b.push(e);
-            }
-        }
-        var f = this._itemsToReappendFinder.findAllOnSizesTransform(b, a[0].connectionToTransform);
-        var g = f.itemsToReappend;
-        var b = f.connectionsToReappend;
-        var h = f.firstConnectionToReappend;
-        this._transformedItemMarker.markAllTransformDependedItems(g);
-        this._transformerConnectors.recreateConnectorsPerFirstItemReappendOnTransform(g[0], h);
-        this._itemsReappender.createReappendQueue(g, b);
-        this._itemsReappender.startReappendingQueuedItems();
-    };
-    var c = this;
-    setTimeout(function() {
-        b.call(c);
-    }, 0);
 };
 
 Gridifier.SizesTransformer.Core.prototype.stopRetransformAllConnectionsQueue = function() {
@@ -163,38 +125,11 @@ Gridifier.SizesTransformer.Core.prototype.retransformAllConnections = function()
             b.splice(0, b.length);
             for (var e = 0; e < c.length; e++) b.push(c[e]);
         }
-        this._transformedItemMarker.markAllTransformDependedItems(a);
         this._transformerConnectors.recreateConnectorsPerFirstItemReappendOnTransform(f.item, f);
         this._itemsReappender.createReappendQueue(a, d);
         this._itemsReappender.startReappendingQueuedItems();
     };
-    var d = this._syncAllScheduledToTransformItemSizes(b);
-    if (!d) {
-        c.call(this);
-    } else {
-        var a = this;
-        setTimeout(function() {
-            c.call(a);
-        }, 0);
-    }
-};
-
-Gridifier.SizesTransformer.Core.prototype._syncAllScheduledToTransformItemSizes = function(a) {
-    var b = [];
-    for (var c = 0; c < a.length; c++) {
-        if (this._transformedItemMarker.isTransformedItem(a[c].item)) {
-            var d = this._transformedItemMarker.getTransformedItemTargetRawSizes(a[c].item);
-            b.push({
-                connectionToTransform: a[c],
-                widthToTransform: d.targetRawWidth,
-                heightToTransform: d.targetRawHeight
-            });
-        }
-    }
-    if (b.length == 0) return false;
-    b = this._itemNewPxSizesFinder.calculateNewPxSizesPerAllTransformedItems(b);
-    this._transformedItemMarker.markEachConnectionItemWithTransformData(b);
-    return true;
+    c.call(this);
 };
 
 Gridifier.SizesTransformer.Core.prototype.retransformFrom = function(a) {
@@ -212,7 +147,6 @@ Gridifier.SizesTransformer.Core.prototype.retransformFrom = function(a) {
     var g = f.itemsToReappend;
     var b = f.connectionsToReappend;
     var h = f.firstConnectionToReappend;
-    this._transformedItemMarker.markAllTransformDependedItems(g);
     this._transformerConnectors.recreateConnectorsPerFirstItemReappendOnTransform(g[0], h);
     this._itemsReappender.createReappendQueue(g, b);
     this._itemsReappender.startReappendingQueuedItems();
@@ -251,7 +185,6 @@ Gridifier.SizesTransformer.Core.prototype.retransformFromFirstSortedConnection =
     var l = k.itemsToReappend;
     var b = k.connectionsToReappend;
     var m = k.firstConnectionToReappend;
-    this._transformedItemMarker.markAllTransformDependedItems(l);
     this._transformerConnectors.recreateConnectorsPerFirstItemReappendOnTransform(l[0], m);
     this._itemsReappender.createReappendQueue(l, b);
     this._itemsReappender.startReappendingQueuedItems();

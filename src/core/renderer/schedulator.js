@@ -44,9 +44,7 @@ Gridifier.Renderer.Schedulator.SCHEDULED_CONNECTIONS_PROCESSING_TYPES = {
     SHOW: 0,
     HIDE: 1,
     RENDER: 2,
-    RENDER_TRANSFORMED: 3,
-    RENDER_DEPENDED: 4,
-    DELAYED_RENDER: 5
+    DELAYED_RENDER: 3
 };
 
 Gridifier.Renderer.Schedulator.prototype.setSilentRendererInstance = function(a) {
@@ -104,28 +102,6 @@ Gridifier.Renderer.Schedulator.prototype.scheduleDelayedRender = function(a, b, 
     this._schedule();
 };
 
-Gridifier.Renderer.Schedulator.prototype.scheduleRenderTransformed = function(a, b, c, d, e) {
-    this._scheduledConnectionsToProcessData.push({
-        connection: a,
-        processingType: Gridifier.Renderer.Schedulator.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.RENDER_TRANSFORMED,
-        left: b,
-        top: c,
-        targetWidth: d,
-        targetHeight: e
-    });
-    this._schedule();
-};
-
-Gridifier.Renderer.Schedulator.prototype.scheduleRenderDepended = function(a, b, c) {
-    this._scheduledConnectionsToProcessData.push({
-        connection: a,
-        processingType: Gridifier.Renderer.Schedulator.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.RENDER_DEPENDED,
-        left: b,
-        top: c
-    });
-    this._schedule();
-};
-
 Gridifier.Renderer.Schedulator.prototype._schedule = function() {
     var a = this;
     this._processScheduledConnectionsTimeout = setTimeout(function() {
@@ -149,91 +125,66 @@ Gridifier.Renderer.Schedulator.prototype._processScheduledConnections = function
                 left: f,
                 top: g
             });
-            if (this._gridifier.hasItemBindedClone(d.item)) {
-                var h = this._gridifier.getItemClone(d.item);
-                Dom.css.set(h, {
-                    position: "absolute",
-                    left: f,
-                    top: g
-                });
-            }
-            var i = this._settings.getToggle();
-            var j = this._settings.getToggleTimeouter();
-            var k = this._settings.getEventEmitter();
-            var l = this._settings.getToggleAnimationMsDuration();
-            var m = this._settings.getSizesResolverManager();
-            var n = this._settings.getCoordsChanger();
-            var o = this._settings.getCollector();
-            var p = this._settings.getCoordsChangerApi();
-            var q = this._gridifier.getItemClonesManager();
-            var r = this._settings.getToggleTransitionTiming();
-            var s = function(b) {
-                i.show(d.item, a._gridifier.getGrid(), l, j, k, m, n, o, f, g, p, q, r);
+            var h = this._settings.getToggle();
+            var i = this._settings.getToggleTimeouter();
+            var j = this._settings.getEventEmitter();
+            var k = this._settings.getToggleAnimationMsDuration();
+            var l = this._settings.getSizesResolverManager();
+            var m = this._settings.getCoordsChanger();
+            var n = this._settings.getCollector();
+            var o = this._settings.getCoordsChangerApi();
+            var p = this._settings.getToggleTransitionTiming();
+            var q = function(b) {
+                h.show(d.item, a._gridifier.getGrid(), k, i, j, l, m, n, f, g, o, null, p);
             };
-            if (this._gridifier.hasItemBindedClone(d.item)) {
-                var h = this._gridifier.getItemClone(d.item);
-                n(h, f, g, l, k, false, false, false, true);
-            } else {
-                n(d.item, f, g, l, k, false, false, false, true);
-            }
-            k.emitBeforeShowPerRetransformSortEvent();
-            s(d.item);
+            m(d.item, f, g, k, j, true);
+            j.emitBeforeShowPerRetransformSortEvent();
+            q(d.item);
         } else if (e == b.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.HIDE) {
             this._renderer.unmarkItemAsScheduledToHide(d.item);
-            var i = this._settings.getToggle();
-            var j = this._settings.getToggleTimeouter();
-            var k = this._settings.getEventEmitter();
-            var l = this._settings.getToggleAnimationMsDuration();
-            var m = this._settings.getSizesResolverManager();
-            var n = this._settings.getCoordsChanger();
-            var o = this._settings.getCollector();
-            var p = this._settings.getCoordsChangerApi();
-            var q = this._gridifier.getItemClonesManager();
-            var r = this._settings.getToggleTransitionTiming();
-            var t = function(b) {
-                i.hide(b, a._gridifier.getGrid(), l, j, k, m, n, o, f, g, p, q, r);
+            var h = this._settings.getToggle();
+            var i = this._settings.getToggleTimeouter();
+            var j = this._settings.getEventEmitter();
+            var k = this._settings.getToggleAnimationMsDuration();
+            var l = this._settings.getSizesResolverManager();
+            var m = this._settings.getCoordsChanger();
+            var n = this._settings.getCollector();
+            var o = this._settings.getCoordsChangerApi();
+            var p = this._settings.getToggleTransitionTiming();
+            var r = function(b) {
+                h.hide(b, a._gridifier.getGrid(), k, i, j, l, m, n, f, g, o, null, p);
             };
-            t(d.item);
+            r(d.item);
         } else if (e == b.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.DELAYED_RENDER) {
-            var u = this._scheduledConnectionsToProcessData[c].delay;
-            var n = this._settings.getCoordsChanger();
-            var k = this._settings.getEventEmitter();
+            var s = this._scheduledConnectionsToProcessData[c].delay;
+            var m = this._settings.getCoordsChanger();
+            var j = this._settings.getEventEmitter();
             if (Dom.hasAttribute(d.item, Gridifier.Api.Toggle.IS_TOGGLE_ANIMATION_WITH_COORDS_CHANGE_RUNNING)) {
-                var l = this._settings.getToggleAnimationMsDuration();
-                var v = this._settings.getToggleTransitionTiming();
+                var k = this._settings.getToggleAnimationMsDuration();
+                var t = this._settings.getToggleTransitionTiming();
             } else {
-                var l = this._settings.getCoordsChangeAnimationMsDuration();
-                var v = this._settings.getCoordsChangeTransitionTiming();
+                var k = this._settings.getCoordsChangeAnimationMsDuration();
+                var t = this._settings.getCoordsChangeTransitionTiming();
             }
             var a = this;
             (function(b, c, d, e, f) {
                 setTimeout(function() {
                     var f = a._connections.findConnectionByItem(b, true);
                     if (f == null) return;
-                    n(b, a._rendererConnections.getCssLeftPropertyValuePerConnection(f), a._rendererConnections.getCssTopPropertyValuePerConnection(f), c, d, false, false, false, false, e);
+                    m(b, a._rendererConnections.getCssLeftPropertyValuePerConnection(f), a._rendererConnections.getCssTopPropertyValuePerConnection(f), c, d, false, e);
                 }, f);
-            })(d.item, l, k, v, u);
-        } else if (e == b.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.RENDER || e == b.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.RENDER_DEPENDED) {
-            var n = this._settings.getCoordsChanger();
-            var k = this._settings.getEventEmitter();
+            })(d.item, k, j, t, s);
+        } else if (e == b.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.RENDER) {
+            var m = this._settings.getCoordsChanger();
+            var j = this._settings.getEventEmitter();
             if (Dom.hasAttribute(d.item, Gridifier.Api.Toggle.IS_TOGGLE_ANIMATION_WITH_COORDS_CHANGE_RUNNING)) {
-                var l = this._settings.getToggleAnimationMsDuration();
-                var v = this._settings.getToggleTransitionTiming();
+                var k = this._settings.getToggleAnimationMsDuration();
+                var t = this._settings.getToggleTransitionTiming();
             } else {
-                var l = this._settings.getCoordsChangeAnimationMsDuration();
-                var v = this._settings.getCoordsChangeTransitionTiming();
+                var k = this._settings.getCoordsChangeAnimationMsDuration();
+                var t = this._settings.getCoordsChangeTransitionTiming();
             }
-            n(d.item, f, g, l, k, false, false, false, false, v);
-        } else if (e == b.SCHEDULED_CONNECTIONS_PROCESSING_TYPES.RENDER_TRANSFORMED) {
-            var w = this._scheduledConnectionsToProcessData[c].targetWidth;
-            var x = this._scheduledConnectionsToProcessData[c].targetHeight;
-            var y = this._settings.getSizesChanger();
-            y(d.item, w, x);
-            var n = this._settings.getCoordsChanger();
-            var l = this._settings.getCoordsChangeAnimationMsDuration();
-            var k = this._settings.getEventEmitter();
-            var v = this._settings.getCoordsChangeTransitionTiming();
-            n(d.item, f, g, l, k, true, w, x, false, v);
+            m(d.item, f, g, k, j, false, t);
         }
     }
     this._gridifier.scheduleGridSizesUpdate();

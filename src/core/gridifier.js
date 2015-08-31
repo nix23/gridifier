@@ -22,8 +22,6 @@ var Gridifier = function(a, b) {
     this._filtrator = null;
     this._disconnector = null;
     this._sizesResolverManager = null;
-    this._lifecycleCallbacks = null;
-    this._itemClonesManager = null;
     this._responsiveClassesManager = null;
     this._imagesResolver = null;
     this._connectors = null;
@@ -39,7 +37,6 @@ var Gridifier = function(a, b) {
     this._appender = null;
     this._reversedAppender = null;
     this._operationsQueue = null;
-    this._toggleOperation = null;
     this._transformOperation = null;
     this._dragifier = null;
     this._resizeEventHandler = null;
@@ -55,7 +52,6 @@ var Gridifier = function(a, b) {
         c._settings.setCollectorInstance(c._collector);
         c._normalizer = new Gridifier.Normalizer(c, c._sizesResolverManager);
         c._operation = new Gridifier.Operation();
-        c._lifecycleCallbacks = new Gridifier.LifecycleCallbacks(c._collector);
         c._grid.setCollectorInstance(c._collector);
         if (c._settings.shouldResolveImages()) {
             c._imagesResolver = new Gridifier.ImagesResolver(c);
@@ -67,8 +63,7 @@ var Gridifier = function(a, b) {
             c._connections = new Gridifier.HorizontalGrid.Connections(c, c._guid, c._settings, c._sizesResolverManager, c._eventEmitter);
             c._connectionsSorter = new Gridifier.HorizontalGrid.ConnectionsSorter(c._connections, c._settings, c._guid);
         }
-        c._itemClonesManager = new Gridifier.ItemClonesManager(c._grid, c._collector, c._connections, c._sizesResolverManager);
-        c._responsiveClassesManager = new Gridifier.ResponsiveClassesManager(c, c._settings, c._collector, c._guid, c._eventEmitter, c._itemClonesManager);
+        c._responsiveClassesManager = new Gridifier.ResponsiveClassesManager(c, c._settings, c._collector, c._guid, c._eventEmitter);
         c._iterator = new Gridifier.Iterator(c._settings, c._collector, c._connections, c._connectionsSorter, c._guid);
         c._gridSizesUpdater = new Gridifier.GridSizesUpdater(c, c._grid, c._connections, c._settings, c._eventEmitter);
         c._connectors = new Gridifier.Connectors(c._guid, c._connections);
@@ -89,8 +84,7 @@ var Gridifier = function(a, b) {
         c._filtrator = new Gridifier.Filtrator(c, c._collector, c._connections, c._settings, c._guid, c._disconnector);
         c._sizesTransformer = new Gridifier.SizesTransformer.Core(c, c._settings, c._collector, c._connectors, c._connections, c._connectionsSorter, c._guid, c._appender, c._reversedAppender, c._normalizer, c._operation, c._sizesResolverManager, c._eventEmitter);
         c._connections.setSizesTransformerInstance(c._sizesTransformer);
-        c._toggleOperation = new Gridifier.TransformerOperations.Toggle(c, c._collector, c._connections, c._guid, c._sizesTransformer, c._sizesResolverManager);
-        c._transformOperation = new Gridifier.TransformerOperations.Transform(c, c._collector, c._connections, c._guid, c._sizesTransformer, c._sizesResolverManager);
+        c._transformOperation = new Gridifier.TransformerOperations.Transform(c._sizesTransformer, c._sizesResolverManager);
         c._operationsQueue = new Gridifier.Operations.Queue(c._gridSizesUpdater, c._collector, c._connections, c._connectionsSorter, c._guid, c._settings, c._prepender, c._reversedPrepender, c._appender, c._reversedAppender, c._sizesTransformer, c._sizesResolverManager, c._eventEmitter);
         c._silentRenderer = new Gridifier.SilentRenderer(c, c._collector, c._connections, c._operationsQueue, c._renderer, c._renderer.getRendererConnections(), c._sizesResolverManager);
         c._renderer.setSilentRendererInstance(c._silentRenderer);
@@ -117,7 +111,8 @@ var Gridifier = function(a, b) {
         Event.add(window, "resize", c._resizeEventHandler);
     };
     this._unbindEvents = function() {
-        Event.remove(window, "resize");
+        Event.remove(window, "resize", c._resizeEventHandler);
+        if (c.isDragifierEnabled()) c.disableDragifier();
     };
     this.destruct = function() {
         c._unbindEvents();
@@ -274,9 +269,8 @@ Gridifier.prototype.shift = function() {
 
 Gridifier.prototype.disconnect = function(a) {
     var b = this;
-    a = b._itemClonesManager.unfilterClones(a);
+    a = b._collector.toDOMCollection(a);
     a = b._collector.filterOnlyConnectedItems(a);
-    b._lifecycleCallbacks.executePreDisconnectCallbacks(a);
     var c = function() {
         this._sizesTransformer.stopRetransformAllConnectionsQueue();
         this._disconnector.disconnect(a, Gridifier.Disconnector.DISCONNECT_TYPES.HARD);
@@ -290,11 +284,6 @@ Gridifier.prototype.disconnect = function(a) {
 
 Gridifier.prototype.setCoordsChanger = function(a) {
     this._settings.setCoordsChanger(a);
-    return this;
-};
-
-Gridifier.prototype.setSizesChanger = function(a) {
-    this._settings.setSizesChanger(a);
     return this;
 };
 
@@ -412,22 +401,19 @@ Gridifier.prototype.setRetransformQueueBatchTimeout = function(a) {
 
 Gridifier.prototype.prepend = function(a, b, c) {
     if (this._settings.shouldResolveImages()) {
-        this._imagesResolver.scheduleImagesResolve(this._collector.toDOMCollection(a), Gridifier.ImagesResolver.OPERATIONS.PREPEND, {
+        if (this._settings.isMirroredPrepend()) var d = Gridifier.ImagesResolver.OPERATIONS.INSERT_BEFORE; else var d = Gridifier.ImagesResolver.OPERATIONS.PREPEND;
+        this._imagesResolver.scheduleImagesResolve(this._collector.toDOMCollection(a), d, {
             batchSize: b,
-            batchTimeout: c
+            batchTimeout: c,
+            beforeItem: null
         });
     } else {
-        this.executePrepend(a, b, c);
+        if (this._settings.isMirroredPrepend()) this.insertBefore(a, null, b, c); else this.executePrepend(a, b, c);
     }
     return this;
 };
 
 Gridifier.prototype.executePrepend = function(a, b, c) {
-    if (this._settings.isMirroredPrepend()) {
-        this.insertBefore(a, null, b, c);
-        return this;
-    }
-    this._lifecycleCallbacks.executePreInsertCallbacks(a);
     var d = function() {
         this._operationsQueue.schedulePrependOperation(a, b, c);
     };
@@ -450,7 +436,6 @@ Gridifier.prototype.append = function(a, b, c) {
 };
 
 Gridifier.prototype.executeAppend = function(a, b, c) {
-    this._lifecycleCallbacks.executePreInsertCallbacks(a);
     var d = function() {
         this._operationsQueue.scheduleAppendOperation(a, b, c);
     };
@@ -500,7 +485,6 @@ Gridifier.prototype.insertBefore = function(a, b, c, d) {
 };
 
 Gridifier.prototype.executeInsertBefore = function(a, b, c, d) {
-    this._lifecycleCallbacks.executePreInsertCallbacks(a);
     var e = function() {
         this._operationsQueue.scheduleInsertBeforeOperation(a, b, c, d);
     };
@@ -524,7 +508,6 @@ Gridifier.prototype.insertAfter = function(a, b, c, d) {
 };
 
 Gridifier.prototype.executeInsertAfter = function(a, b, c, d) {
-    this._lifecycleCallbacks.executePreInsertCallbacks(a);
     var e = function() {
         this._operationsQueue.scheduleInsertAfterOperation(a, b, c, d);
     };
@@ -551,30 +534,6 @@ Gridifier.prototype.triggerRotate = function(a, b, c, d) {
 Gridifier.prototype.retransformAllSizes = function() {
     this._normalizer.updateItemAntialiasValues();
     this._transformOperation.executeRetransformAllSizes();
-    return this;
-};
-
-Gridifier.prototype.toggleSizes = function(a, b, c) {
-    this._normalizer.updateItemAntialiasValues();
-    this._transformOperation.schedule(this._toggleOperation.prepare(a, b, c, false));
-    return this;
-};
-
-Gridifier.prototype.transformSizes = function(a, b, c) {
-    this._normalizer.updateItemAntialiasValues();
-    this._transformOperation.schedule(this._transformOperation.prepare(a, b, c, false));
-    return this;
-};
-
-Gridifier.prototype.toggleSizesWithPaddingBottom = function(a, b, c) {
-    this._normalizer.updateItemAntialiasValues();
-    this._transformOperation.schedule(this._toggleOperation.prepare(a, b, c, true));
-    return this;
-};
-
-Gridifier.prototype.transformSizesWithPaddingBottom = function(a, b, c) {
-    this._normalizer.updateItemAntialiasValues();
-    this._transformOperation.schedule(this._transformOperation.prepare(a, b, c, true));
     return this;
 };
 
@@ -617,77 +576,11 @@ Gridifier.prototype.isItemConnected = function(a) {
     return this._collector.isItemConnected(a);
 };
 
-Gridifier.prototype.addPreInsertLifecycleCallback = function(a) {
-    this._lifecycleCallbacks.addPreInsertCallback(a);
-    return this;
-};
-
-Gridifier.prototype.addPreDisconnectLifecycleCallback = function(a) {
-    this._lifecycleCallbacks.addPreDisconnectCallback(a);
-    return this;
-};
-
-Gridifier.prototype.setItemClonesManagerLifecycleCallbacks = function() {
-    var a = this;
-    this.addPreInsertLifecycleCallback(function(b) {
-        for (var c = 0; c < b.length; c++) {
-            a._itemClonesManager.createClone(b[c]);
-        }
-    });
-    this.addPreDisconnectLifecycleCallback(function(b) {
-        setTimeout(function() {
-            for (var c = 0; c < b.length; c++) {
-                a._itemClonesManager.destroyClone(b[c]);
-            }
-        }, a._settings.getToggleAnimationMsDuration());
-    });
-    return this;
-};
-
-Gridifier.prototype.getItemClonesManager = function() {
-    return this._itemClonesManager;
-};
-
-Gridifier.prototype.hasItemBindedClone = function(a) {
-    var b = this._collector.toDOMCollection(a);
-    var a = b[0];
-    return this._itemClonesManager.hasBindedClone(a);
-};
-
-Gridifier.prototype.isItemClone = function(a) {
-    var b = this._collector.toDOMCollection(a);
-    var a = b[0];
-    return this._itemClonesManager.isItemClone(a);
-};
-
-Gridifier.prototype.getItemClone = function(a) {
-    var b = this._collector.toDOMCollection(a);
-    var a = b[0];
-    if (!this._itemClonesManager.hasBindedClone(a)) new Error("Gridifier error: item has no binded clone.(Wrong item?). Item = ", a);
-    return this._itemClonesManager.getBindedClone(a);
-};
-
-Gridifier.prototype.getOriginalItemFromClone = function(a) {
-    var b = this._collector.toDOMCollection(a);
-    var c = b[0];
-    return this._itemClonesManager.getOriginalItemFromClone(c);
-};
-
 Gridifier.prototype.getConnectedItems = function() {
     var a = this._connections.get();
     var b = [];
     for (var c = 0; c < a.length; c++) b.push(a[c].item);
     return b;
-};
-
-Gridifier.prototype.hasConnectedItemAtPoint = function(a, b) {
-    var c = this._itemClonesManager.getConnectionItemAtPoint(a, b);
-    if (c == null) return false;
-    return true;
-};
-
-Gridifier.prototype.getConnectedItemAtPoint = function(a, b) {
-    return this._itemClonesManager.getConnectionItemAtPoint(a, b);
 };
 
 Gridifier.prototype.setToggle = Gridifier.prototype.toggleBy;

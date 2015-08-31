@@ -49,9 +49,6 @@ Gridifier.CoreErrors.prototype._parseIfIsCoreError = function(a) {
     } else if (a == b.CONNECTIONS.CONNECTION_BY_ITEM_NOT_FOUND) {
         this._markAsCoreError();
         this._connectionByItemNotFoundError();
-    } else if (a == b.SIZES_TRANSFORMER.WRONG_TARGET_TRANSFORMATION_SIZES) {
-        this._markAsCoreError();
-        this._wrongTargetTransformationSizesError();
     } else if (a == b.APPENDER.WRONG_INSERT_BEFORE_TARGET_ITEM) {
         this._markAsCoreError();
         this._wrongInsertBeforeTargetItem();
@@ -91,16 +88,6 @@ Gridifier.CoreErrors.prototype._connectionByItemNotFoundError = function() {
     a += "Item: \n" + b.item + "\n";
     a += "Connections:\n";
     for (var c = 0; c < b.connections.length; c++) a += b.connections[c] + "\n";
-    this._errorMsg = a;
-};
-
-Gridifier.CoreErrors.prototype._wrongTargetTransformationSizesError = function() {
-    var a = this._error.getErrorMsgPrefix();
-    var b = this._error.getErrorParam();
-    a += "Wrong target transformation sizes. 'transformSizes' and 'toggleSizes' functions accepts 4 types of values:\n";
-    a += "    gridifier.transformSizes(item, '100px', '60%'); // px or % values\n";
-    a += "    gridifier.transformSizes(item, 100, 200.5); // values without postfix will be parsed as px value.";
-    a += "    gridifier.transformSizes(item, '*2', '/0.5'); // values with multiplication or division expressions.";
     this._errorMsg = a;
 };
 

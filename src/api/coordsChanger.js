@@ -33,7 +33,6 @@ Gridifier.Api.CoordsChanger = function(settings, gridifier, eventEmitter) {
         me._addCSS3PositionCoordsChanger();
         me._addCSS3TranslateCoordsChanger();
         me._addCSS3Translate3DCoordsChanger();
-        me._addCSS3Translate3DClonesCoordsChanger();
     };
 
     this._bindEvents = function() {
@@ -77,9 +76,6 @@ Gridifier.Api.CoordsChanger.prototype._addDefaultCoordsChanger = function() {
                                                        newTop,
                                                        animationMsDuration,
                                                        eventEmitter,
-                                                       emitTransformEvent,
-                                                       newWidth,
-                                                       newHeight,
                                                        isItemInitializationCall,
                                                        transitionTiming) {
         var isItemInitializationCall = isItemInitializationCall || false;
@@ -94,10 +90,6 @@ Gridifier.Api.CoordsChanger.prototype._addDefaultCoordsChanger = function() {
             Dom.css.set(item, {left: newLeft});
         if(newTop != item.style.top)
             Dom.css.set(item, {top: newTop});
-
-        if(emitTransformEvent) {
-            eventEmitter.emitTransformEvent(item, newWidth, newHeight, newLeft, newTop);
-        }
     };
 }
 
@@ -109,14 +101,11 @@ Gridifier.Api.CoordsChanger.prototype._addCSS3PositionCoordsChanger = function()
                                                          newTop,
                                                          animationMsDuration,
                                                          eventEmitter,
-                                                         emitTransformEvent,
-                                                         newWidth,
-                                                         newHeight,
                                                          isItemInitializationCall,
                                                          transitionTiming) {
         if(!Dom.isBrowserSupportingTransitions()) {
             me._coordsChangerFunctions["default"](
-                item, newLeft, newTop, animationMsDuration, eventEmitter, emitTransformEvent, newWidth, newHeight
+                item, newLeft, newTop, animationMsDuration, eventEmitter
             );
             return;
         }
@@ -139,12 +128,6 @@ Gridifier.Api.CoordsChanger.prototype._addCSS3PositionCoordsChanger = function()
             Dom.css3.transitionProperty(item, "top " + animationMsDuration + "ms " + transitionTiming);
             Dom.css.set(item, {top: newTop});
         }
-
-        if(emitTransformEvent) {
-            setTimeout(function() {
-                eventEmitter.emitTransformEvent(item, newWidth, newHeight, newLeft, newTop);
-            }, animationMsDuration + 20);
-        }
     }
 }
 
@@ -157,14 +140,11 @@ Gridifier.Api.CoordsChanger.prototype._addCSS3TranslateCoordsChanger = function(
                         newTop,
                         animationMsDuration,
                         eventEmitter,
-                        emitTransformEvent,
-                        newWidth,
-                        newHeight,
                         isItemInitializationCall,
                         transitionTiming) {
             if(!Dom.isBrowserSupportingTransitions()) {
                 me._coordsChangerFunctions["default"](
-                    item, newLeft, newTop, animationMsDuration, eventEmitter, emitTransformEvent, newWidth, newHeight
+                    item, newLeft, newTop, animationMsDuration, eventEmitter
                 );
                 return;
             }
@@ -223,12 +203,6 @@ Gridifier.Api.CoordsChanger.prototype._addCSS3TranslateCoordsChanger = function(
 
                 Dom.css3.transformProperty(item, "translate", translateX + "px," + translateY + "px");
             }
-
-            if(emitTransformEvent) {
-                setTimeout(function () {
-                    eventEmitter.emitTransformEvent(item, newWidth, newHeight, newLeft, newTop);
-                }, animationMsDuration + 20);
-            }
         }
     };
 
@@ -256,14 +230,11 @@ Gridifier.Api.CoordsChanger.prototype._addCSS3Translate3DCoordsChanger = functio
                          newTop,
                          animationMsDuration,
                          eventEmitter,
-                         emitTransformEvent,
-                         newWidth,
-                         newHeight,
                          isItemInitializationCall,
                          transitionTiming) {
             if(!Dom.isBrowserSupportingTransitions()) {
                 me._coordsChangerFunctions["default"](
-                    item, newLeft, newTop, animationMsDuration, eventEmitter, emitTransformEvent, newWidth, newHeight
+                    item, newLeft, newTop, animationMsDuration, eventEmitter
                 );
                 return;
             }
@@ -324,12 +295,6 @@ Gridifier.Api.CoordsChanger.prototype._addCSS3Translate3DCoordsChanger = functio
                 Dom.css3.backfaceVisibility(item, "hidden");
                 Dom.css3.transformProperty(item, "translate3d", translateX + "px," + translateY + "px,0px");
             }
-
-            if(emitTransformEvent) {
-                setTimeout(function () {
-                    eventEmitter.emitTransformEvent(item, newWidth, newHeight, newLeft, newTop);
-                }, animationMsDuration + 20);
-            }
         };
     }
 
@@ -346,128 +311,6 @@ Gridifier.Api.CoordsChanger.prototype._addCSS3Translate3DCoordsChanger = functio
             });
         }
     );
-}
-
-Gridifier.Api.CoordsChanger.CSS3_TRANSLATE_3D_CLONES_RESTRICT_CLONE_SHOW_DATA_ATTR = "gridifier-clones-coords-changer-restrict-show";
-
-Gridifier.Api.CoordsChanger.prototype._addCSS3Translate3DClonesCoordsChanger = function() {
-    var me = this;
-    var itemShownDataAttr = "data-gridifier-item-shown";
-
-    this._gridifier.onShow(function(item) {
-        var itemClonesManager = me._gridifier.getItemClonesManager();
-        if(!itemClonesManager.hasBindedClone(item))
-            return;
-
-        item.setAttribute(itemShownDataAttr, "yes");
-    });
-
-    this._gridifier.onHide(function(item) {
-        //var itemClonesManager = me._gridifier.getItemClonesManager();
-        //if(!itemClonesManager.hasBindedClone(item))
-        //    return;
-
-        if(Dom.hasAttribute(item, itemShownDataAttr))
-            item.removeAttribute(itemShownDataAttr);
-    });
-
-    var clonesHideTimeouts = [];
-
-    this._coordsChangerFunctions.CSS3Translate3DClones = function(item,
-                                                                  newLeft,
-                                                                  newTop,
-                                                                  animationMsDuration,
-                                                                  eventEmitter,
-                                                                  emitTransformEvent,
-                                                                  newWidth,
-                                                                  newHeight,
-                                                                  isItemInitializationCall,
-                                                                  transitionTiming) {
-        if(!Dom.isBrowserSupportingTransitions()) {
-            me._coordsChangerFunctions["default"](
-                item, newLeft, newTop, animationMsDuration, eventEmitter, emitTransformEvent, newWidth, newHeight
-            );
-            return;
-        }
-
-        // We should preinit item transform property with scale3d(1,1,1) rule.
-        // Otherwise animation will break on scale3d applying any later time.
-        //      item.style.wT = "translate3d(0px,0px,0px)";
-        //      item.style.wT = "translate3d(0px,0px,0px) scale3d(1,1,1) "; -> Won't work.
-        //      item.style.wT = "scale3d(1,1,1)";
-        //      item.style.wT = "scale3d(1,1,1) translate3d(0px,0px,0px)"; -> Will work, but will break without setting
-        //                                                                    second rule without timeout. So we should
-        //                                                                    set all required rules per coords changers
-        //                                                                    before calling toggle function for first time.
-        var isItemInitializationCall = isItemInitializationCall || false;
-        if(isItemInitializationCall) {
-            Dom.css3.transform(item, "scale3d(1,1,1) translate3d(0px,0px,0px)");
-            return;
-        }
-
-        newLeft = parseFloat(newLeft) + "px";
-        newTop = parseFloat(newTop) + "px";
-
-        if(Dom.hasAttribute(item, Gridifier.Dragifier.IS_DRAGGABLE_ITEM_DATA_ATTR))
-            var isDraggableItem = true;
-        else
-            var isDraggableItem = false;
-
-        var itemClonesManager = me._gridifier.getItemClonesManager();
-        var itemClone = itemClonesManager.getBindedClone(item);
-
-        var guid = item.getAttribute(Gridifier.GUID.GUID_DATA_ATTR);
-
-        if(typeof clonesHideTimeouts[guid] == "undefined") {
-            clonesHideTimeouts[guid] = null;
-        }
-
-        var cc = Gridifier.Api.CoordsChanger;
-        if(!isDraggableItem && !Dom.hasAttribute(itemClone, cc.CSS3_TRANSLATE_3D_CLONES_RESTRICT_CLONE_SHOW_DATA_ATTR)) {
-            if(itemClone.style.visibility != "visible")
-                itemClone.style.visibility = "visible";
-        }
-
-        if(Dom.hasAttribute(item, itemShownDataAttr)) {
-            if(item.style.visibility != "hidden")
-                item.style.visibility = "hidden";
-        }
-
-        if(emitTransformEvent) {
-            var sizesChanger = me._settings.getSizesChanger();
-            sizesChanger(itemClone, newWidth, newHeight);
-
-            setTimeout(function () {
-                eventEmitter.emitTransformEvent(itemClone, newWidth, newHeight, newLeft, newTop);
-            }, animationMsDuration + 20);
-        }
-
-        if(newLeft != item.style.left)
-            Dom.css.set(item, {left: newLeft});
-
-        if(newTop != item.style.top)
-            Dom.css.set(item, {top: newTop});
-
-        var tt = transitionTiming;
-        me._coordsChangerFunctions.CSS3Translate3D(
-            itemClone, newLeft, newTop, animationMsDuration, eventEmitter, emitTransformEvent, newWidth, newHeight, false, tt
-        );
-
-        if(clonesHideTimeouts[guid] != null) {
-            clearTimeout(clonesHideTimeouts[guid]);
-            clonesHideTimeouts[guid] = null;
-        }
-
-        clonesHideTimeouts[guid] = setTimeout(function () {
-            if(Dom.hasAttribute(item, itemShownDataAttr) && !isDraggableItem) {
-                if(item.style.visibility != "visible")
-                    item.style.visibility = "visible";
-
-                if(itemClone.style.visibility != "hidden")
-                    itemClone.style.visibility = "hidden";
-            }
-        }, animationMsDuration);
-    };
 }
 
 Gridifier.Api.CoordsChanger.prototype.hasTranslateOrTranslate3DTransformSet = function(DOMElem) {

@@ -15,7 +15,6 @@ Gridifier.Renderer = function(a, b, c, d) {
     this._connections = null;
     this._settings = null;
     this._normalizer = null;
-    this._transformedItemMarker = null;
     this._rendererSchedulator = null;
     this._rendererConnections = null;
     this._css = {};
@@ -24,7 +23,6 @@ Gridifier.Renderer = function(a, b, c, d) {
         e._connections = b;
         e._settings = c;
         e._normalizer = d;
-        e._transformedItemMarker = new Gridifier.SizesTransformer.TransformedItemMarker();
         e._rendererConnections = new Gridifier.Renderer.Connections(e._settings);
         e._rendererSchedulator = new Gridifier.Renderer.Schedulator(e._gridifier, e._settings, e._connections, e, e._rendererConnections);
     };
@@ -93,19 +91,7 @@ Gridifier.Renderer.prototype.hideConnections = function(a) {
 };
 
 Gridifier.Renderer.prototype.renderTransformedConnections = function(a) {
-    for (var b = 0; b < a.length; b++) {
-        var c = this._rendererConnections.getCssLeftPropertyValuePerConnection(a[b]);
-        var d = this._rendererConnections.getCssTopPropertyValuePerConnection(a[b]);
-        this._rendererSchedulator.reinit();
-        if (this._transformedItemMarker.isTransformedItem(a[b].item)) {
-            var e = this._transformedItemMarker.getTransformedItemTargetRawSizes(a[b].item);
-            this._rendererSchedulator.scheduleRenderTransformed(a[b], c, d, e.targetRawWidth, e.targetRawHeight);
-            this._transformedItemMarker.unmarkItemAsTransformed(a[b].item);
-        } else if (this._transformedItemMarker.isDependedItem(a[b].item)) {
-            this._rendererSchedulator.scheduleRenderDepended(a[b], c, d);
-            this._transformedItemMarker.unmarkItemAsDepended(a[b].item);
-        }
-    }
+    this.renderConnections(a, false);
 };
 
 Gridifier.Renderer.prototype.renderConnections = function(a, b) {
@@ -140,13 +126,9 @@ Gridifier.Renderer.prototype.renderConnectionsAfterDelay = function(a, b) {
 Gridifier.Renderer.prototype.rotateItems = function(a) {
     var b = [];
     for (var c = 0; c < a.length; c++) {
-        if (this._gridifier.hasItemBindedClone(a[c])) {
-            var d = this._gridifier.getItemClone(a[c]);
-            d.style.visibility = "hidden";
-        }
-        var e = this._connections.findConnectionByItem(a[c]);
-        this._rendererConnections.unmarkConnectionItemAsRendered(e);
-        b.push(e);
+        var d = this._connections.findConnectionByItem(a[c]);
+        this._rendererConnections.unmarkConnectionItemAsRendered(d);
+        b.push(d);
     }
     this.showConnections(b);
 };

@@ -12,3 +12,7 @@
 Dom.init();
 
 SizesResolver.init();
+
+var proto = function(a, b) {
+    for (var c in b) a.prototype[c] = b[c];
+};

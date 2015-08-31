@@ -3,7 +3,7 @@ $(document).ready(function() {
         query: "img",
         resolveImages: true,
         dragifier: true,
-        retransformQueueBatchSize: 100000
+        gridTransformTimeout: 500
     });
 
     grid.append($(".grid").find("img"));

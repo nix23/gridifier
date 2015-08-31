@@ -15,7 +15,6 @@ Gridifier.EventEmitter = function(a) {
     b._showCallbacks = [];
     b._hideCallbacks = [];
     b._gridSizesChangeCallbacks = [];
-    b._transformCallbacks = [];
     b._responsiveTransformCallbacks = [];
     b._gridRetransformCallbacks = [];
     b._connectionCreateCallbacks = [];
@@ -52,9 +51,6 @@ Gridifier.EventEmitter.prototype._bindEmitterToGridifier = function() {
     this._gridifier.onGridSizesChange = function(b) {
         a.onGridSizesChange.call(a, b);
     };
-    this._gridifier.onTransform = function(b) {
-        a.onTransform.call(a, b);
-    };
     this._gridifier.onResponsiveTransform = function(b) {
         a.onResponsiveTransform.call(a, b);
     };
@@ -81,10 +77,6 @@ Gridifier.EventEmitter.prototype.onShow = function(a) {
 
 Gridifier.EventEmitter.prototype.onHide = function(a) {
     this._hideCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onTransform = function(a) {
-    this._transformCallbacks.push(a);
 };
 
 Gridifier.EventEmitter.prototype.onResponsiveTransform = function(a) {
@@ -126,24 +118,16 @@ Gridifier.EventEmitter.prototype.onBeforeShowPerRetransformSorter = function(a) 
 Gridifier.EventEmitter.prototype.emitShowEvent = function(a) {
     for (var b = 0; b < this._showCallbacks.length; b++) {
         this._showCallbacks[b](a);
-        if (this._gridifier.hasItemBindedClone(a)) {
-            var c = this._gridifier.getItemClone(a);
-            this._showCallbacks[b](a);
-        }
     }
 };
 
 Gridifier.EventEmitter.prototype.emitHideEvent = function(a) {
     for (var b = 0; b < this._hideCallbacks.length; b++) {
         this._hideCallbacks[b](a);
-        if (this._gridifier.hasItemBindedClone(a)) {
-            var c = this._gridifier.getItemClone(a);
-            this._hideCallbacks[b](a);
-        }
     }
-    var d = this._gridifier.getCollector();
-    if (d.isItemRestrictedToCollect(a)) {
-        for (var e = 0; e < this._disconnectCallbacks.length; e++) this._disconnectCallbacks[e](a);
+    var c = this._gridifier.getCollector();
+    if (c.isItemRestrictedToCollect(a)) {
+        for (var d = 0; d < this._disconnectCallbacks.length; d++) this._disconnectCallbacks[d](a);
     }
 };
 
@@ -156,12 +140,6 @@ Gridifier.EventEmitter.prototype.emitGridSizesChangeEvent = function() {
 Gridifier.EventEmitter.prototype.emitResponsiveTransformEvent = function(a, b, c) {
     for (var d = 0; d < this._responsiveTransformCallbacks.length; d++) {
         this._responsiveTransformCallbacks[d](a, b, c);
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitTransformEvent = function(a, b, c, d, e) {
-    for (var f = 0; f < this._transformCallbacks.length; f++) {
-        this._transformCallbacks[f](a, b, c, d, e);
     }
 };
 
@@ -181,19 +159,19 @@ Gridifier.EventEmitter.prototype.emitConnectionCreateEvent = function(a) {
     }
 };
 
-Gridifier.EventEmitter.prototype.emitInsertEvent = function() {
-    var a = function() {
-        for (var a = 0; a < this._insertCallbacks.length; a++) {
-            this._insertCallbacks[a]();
+Gridifier.EventEmitter.prototype.emitInsertEvent = function(a) {
+    var b = function() {
+        for (var b = 0; b < this._insertCallbacks.length; b++) {
+            this._insertCallbacks[b](a);
         }
     };
     if (this._insertEventTimeout != null) {
         clearTimeout(this._insertEventTimeout);
         this._insertEventTimeout = null;
     }
-    var b = this;
+    var c = this;
     this._insertEventTimeout = setTimeout(function() {
-        a.call(b);
+        b.call(c);
     }, 20);
 };
 

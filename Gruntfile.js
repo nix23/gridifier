@@ -44,9 +44,7 @@ module.exports = function(grunt) {
         core + "core/eventEmitter.js", // Required
         core + "core/filtrator.js", // Required
         core + "core/guid.js", // Required
-        core + "core/itemClonesManager.js", // Required
         core + "core/iterator.js", // Required
-        core + "core/lifecycleCallbacks.js", // Required
         core + "core/normalizer.js", // Required
         core + "core/operation.js", // Required
         core + "core/resorter.js", // Required
@@ -126,18 +124,11 @@ module.exports = function(grunt) {
         core + "settings/settings.js", // Required
 
         // Sizes Transformer
-        core + "sizesTransformer/emptySpaceNormalizer.js", // Required
-        core + "sizesTransformer/itemNewPxSizesFinder.js", // Required
-        core + "sizesTransformer/itemNewRawSizesFinder.js", // Required
         core + "sizesTransformer/itemsReappender.js", // Required
         core + "sizesTransformer/itemsToReappendFinder.js", // Required
         core + "sizesTransformer/sizesTransformer.js", // Required
-        core + "sizesTransformer/transformedConnectionsSorter.js", // Required
-        core + "sizesTransformer/transformedItemMarker.js", // Required
 
         // Transformer operations
-        core + "transformerOperations/optionsParser.js", // Required
-        core + "transformerOperations/toggle.js", // Required
         core + "transformerOperations/transform.js", // Required
 
         // Horizontal grid 
@@ -181,7 +172,6 @@ module.exports = function(grunt) {
         api + "dragifier.js", // Required
         api + "filter.js", // Required
         api + "rotate.js", // Required
-        api + "sizesChanger.js", // Required
         api + "slide.js", // Required
         api + "sort.js", // Required
         api + "toggle.js", // Required

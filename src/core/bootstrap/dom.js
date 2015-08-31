@@ -56,6 +56,10 @@ var Dom = {
             if (a.style[c] !== undefined) this._isBrowserSupportingTransitions = true;
         }
     },
+    hasAttribute: function(a, b) {
+        if (a.getAttribute(b) === null || a.getAttribute(b) === "") return false;
+        return true;
+    },
     toInt: function(a) {
         return parseInt(a, 10);
     },
@@ -77,10 +81,6 @@ var Dom = {
             c = c.parentNode;
         }
         return false;
-    },
-    hasAttribute: function(a, b) {
-        if (a.getAttribute(b) === null || a.getAttribute(b) === "") return false;
-        return true;
     },
     isBrowserSupportingTransitions: function() {
         return this._isBrowserSupportingTransitions;
@@ -259,3 +259,5 @@ var Dom = {
         }
     }
 };
+
+Dom.has = Dom.hasAttribute;

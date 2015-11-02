@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -10,31 +10,30 @@
  */
 
 var Dom = {
-    hasDOMElemOwnPropertyFunction: null,
-    _isBrowserSupportingTransitions: null,
     init: function() {
-        this.createTrimFunction();
-        this.createHasDOMElemOwnPropertyFunction();
-        this._determineIfBrowserIsSupportingTransitions();
+        this._createTrimFunction();
+        this._createHasOwnPropFn();
+        this._checkIfHasTransitions(Dom.div());
         this.browsers.init();
+        this.css3.init();
     },
-    createTrimFunction: function() {
+    _createTrimFunction: function() {
         if (typeof String.prototype.gridifierTrim !== "function") {
             String.prototype.gridifierTrim = function() {
                 return this.replace(/^\s+|\s+$/g, "");
             };
         }
     },
-    createHasDOMElemOwnPropertyFunction: function() {
-        var a = document.createElement("div");
+    _createHasOwnPropFn: function() {
+        var a = Dom.div();
         var b = document.body || document.documentElement;
         b.appendChild(a);
         if (Object.prototype.hasOwnProperty.call(a, "innerHTML")) {
-            this.hasDOMElemOwnPropertyFunction = function(a, b) {
+            this._hasOwnPropFn = function(a, b) {
                 return Object.prototype.hasOwnProperty.call(a, b);
             };
         } else {
-            this.hasDOMElemOwnPropertyFunction = function(a, b) {
+            this._hasOwnPropFn = function(a, b) {
                 for (var c in a) {
                     if (c == b) return true;
                 }
@@ -43,37 +42,57 @@ var Dom = {
         }
         b.removeChild(a);
     },
-    _determineIfBrowserIsSupportingTransitions: function() {
-        var a = document.createElement("div");
-        var b = {
-            WebkitTransition: "webkitTransitionEnd",
-            MozTransition: "transitionend",
-            OTransition: "oTransitionEnd otransitionend",
-            transition: "transitionend"
-        };
-        this._isBrowserSupportingTransitions = false;
-        for (var c in b) {
-            if (a.style[c] !== undefined) this._isBrowserSupportingTransitions = true;
+    _checkIfHasTransitions: function(a) {
+        var b = [ "WebkitTransition", "MozTransition", "OTransition", "msTransition", "MsTransition", "transition" ];
+        this._hasTransitions = false;
+        for (var c = 0; c < b.length; c++) {
+            if (a.style[b[c]] !== undefined) this._hasTransitions = true;
         }
     },
-    hasAttribute: function(a, b) {
+    get: function(a, b) {
+        return a.getAttribute(b);
+    },
+    set: function(a, b, c) {
+        if (this.isArray(b)) {
+            for (var d = 0; d < b.length; d++) a.setAttribute(b[d][0], b[d][1]);
+            return;
+        }
+        a.setAttribute(b, c);
+    },
+    rm: function(a, b) {
+        a.removeAttribute(b);
+    },
+    rmIfHas: function(a, b) {
+        if (this.isArray(b)) {
+            for (var c in b) {
+                if (this.has(a, b[c])) this.rm(a, b[c]);
+            }
+            return;
+        }
+        if (this.has(a, b)) this.rm(a, b);
+    },
+    has: function(a, b) {
         if (a.getAttribute(b) === null || a.getAttribute(b) === "") return false;
         return true;
     },
-    toInt: function(a) {
+    "int": function(a) {
         return parseInt(a, 10);
     },
-    isJqueryObject: function(a) {
+    isJquery: function(a) {
         if (typeof jQuery == "undefined") return false;
         return a && a instanceof jQuery;
     },
-    isNativeDOMObject: function(a) {
+    isNative: function(a) {
         if (typeof a != "undefined" && typeof a.tagName != "undefined" && typeof a.nodeName != "undefined" && typeof a.ownerDocument != "undefined" && typeof a.removeAttribute != "undefined") return true; else return false;
     },
     isArray: function(a) {
         return Object.prototype.toString.call(a) == "[object Array]";
     },
+    isObj: function(a) {
+        return typeof a == "object" && a !== null;
+    },
     isChildOf: function(a, b) {
+        if (a == b) return false;
         var c = a.parentNode;
         while (c != undefined) {
             if (c == b) return true;
@@ -82,20 +101,49 @@ var Dom = {
         }
         return false;
     },
-    isBrowserSupportingTransitions: function() {
-        return this._isBrowserSupportingTransitions;
+    hasTransitions: function() {
+        return this._hasTransitions;
     },
-    hasDOMElemOwnProperty: function(a, b) {
-        return this.hasDOMElemOwnPropertyFunction(a, b);
+    hasVal: function(a, b) {
+        for (var c in a) {
+            if (a[c] == b) return true;
+        }
+        return false;
+    },
+    hasOwnProp: function(a, b) {
+        return this._hasOwnPropFn(a, b);
+    },
+    hasAnyProp: function(a, b) {
+        for (var c = 0; c < b.length; c++) {
+            if (this._hasOwnPropFn(a, b[c])) return true;
+        }
+        return false;
     },
     toFixed: function(a, b) {
         return parseFloat(+(Math.round(+(a.toString() + "e" + b)).toString() + "e" + -b));
     },
-    areRoundedOrFlooredValuesEqual: function(a, b) {
+    areRoundedOrFlooredEq: function(a, b) {
         return Math.round(a) == Math.round(b) || Math.floor(a) == Math.floor(b);
     },
-    areRoundedOrCeiledValuesEqual: function(a, b) {
+    areRoundedOrCeiledEq: function(a, b) {
         return Math.round(a) == Math.round(b) || Math.ceil(a) == Math.ceil(b);
+    },
+    filter: function(a, b, c) {
+        var c = c || window;
+        var d = [];
+        for (var e = 0; e < a.length; e++) {
+            if (b.call(c, a[e])) d.push(a[e]);
+        }
+        return d;
+    },
+    show: function(a) {
+        a.style.visibility = "visible";
+    },
+    hide: function(a) {
+        a.style.visibility = "hidden";
+    },
+    div: function() {
+        return document.createElement("div");
     },
     browsers: {
         _navigator: null,
@@ -109,30 +157,34 @@ var Dom = {
             if (!this.isAndroid()) return false;
             return /firefox|iceweasel/i.test(this._navigator);
         },
-        isAndroidUCBrowser: function() {
+        isAndroidUC: function() {
             if (!this.isAndroid()) return false;
             return /UCBrowser/i.test(this._navigator);
         }
     },
     css: {
         set: function(a, b) {
-            if (!Dom.isNativeDOMObject(a)) throw new Error("Dom abstraction layer error: DOMElem must be a scalar value.");
+            if (!Dom.isNative(a)) err("Error: not DOM.");
             for (var c in b) a.style[c] = b[c];
+        },
+        set4: function(a, b, c) {
+            var d = [ "Left", "Right", "Top", "Bottom" ];
+            for (var e = 0; e < d.length; e++) a.style[b + d[e]] = Dom.isObj(c) ? c[b + d[e]] : c;
         },
         hasClass: function(a, b) {
             var c = a.getAttribute("class");
             if (c == null || c.length == 0) return false;
-            var d = c.split(" ");
-            for (var e = 0; e < d.length; e++) {
-                d[e] = d[e].gridifierTrim();
-                if (d[e] == b) return true;
+            c = c.split(" ");
+            for (var d = 0; d < c.length; d++) {
+                c[d] = c[d].gridifierTrim();
+                if (c[d] == b) return true;
             }
             return false;
         },
         addClass: function(a, b) {
             var c = a.getAttribute("class");
             if (c == null || c.length == 0) var d = b; else var d = c + " " + b;
-            a.setAttribute("class", d);
+            Dom.set(a, "class", d);
         },
         removeClass: function(a, b) {
             var c = a.getAttribute("class").split(" ");
@@ -141,16 +193,28 @@ var Dom = {
                 if (c[e].gridifierTrim() != b) d += c[e] + " ";
             }
             d = d.substring(0, d.length - 1);
-            a.setAttribute("class", d);
+            Dom.set(a, "class", d);
         }
     },
     css3: {
-        prefixedTransitionProps: [ "WebkitTransition", "MozTransition", "MsTransition", "OTransition", "transition" ],
-        prefixedTransformProps: [ "WebkitTransform", "MozTransform", "OTransform", "MsTransform", "transform" ],
-        prefixedPerspectiveProps: [ "WebkitPerspective", "perspective", "MozPerspective" ],
-        prefixedTransformStyleProps: [ "transformStyle", "WebkitTransformStyle", "MozTransformStyle" ],
-        prefixedBackfaceVisibilityProps: [ "WebkitBackfaceVisibility", "MozBackfaceVisibility", "backfaceVisibility" ],
-        prefixedTransformOriginProps: [ "webkitTransformOrigin", "mozTransformOrigin", "oTransformOrigin", "msTransformOrigin", "transformOrigin" ],
+        _opacityProps: [ "opacity" ],
+        _perspectiveProps: [ "perspective" ],
+        _transformStyleProps: [ "transformStyle" ],
+        _backfaceVisibilityProps: [ "backfaceVisibility" ],
+        _transformOriginProps: [ "transformOrigin" ],
+        init: function() {
+            var a = [ [ "Webkit", "Moz" ], [ "webkit", "moz", "o", "ms" ] ];
+            for (var b = 0; b < a[0].length; b++) {
+                var c = a[0][b];
+                this._opacityProps.push(c + "Opacity");
+                this._perspectiveProps.push(c + "Perspective");
+                this._transformStyleProps.push(c + "TransformStyle");
+                this._backfaceVisibilityProps.push(c + "BackfaceVisibility");
+            }
+            for (var b = 0; b < a[1].length; b++) {
+                this._transformOriginProps.push(a[1][b] + "TransformOrigin");
+            }
+        },
         transition: function(a, b) {
             a.style[Prefixer.get("transition", a)] = b;
         },
@@ -178,9 +242,7 @@ var Dom = {
                 if (i.length == 0) continue;
                 var j = i.split(" ");
                 var k = j[0];
-                if (f.search(k) === -1) {
-                    f += ", " + i;
-                }
+                if (f.search(k) === -1) f += ", " + i;
             }
             a.style[Prefixer.get("transition", a)] = e(f).gridifierTrim();
         },
@@ -198,37 +260,37 @@ var Dom = {
             var g = false;
             for (var h = 0; h < f.length; h++) {
                 var i = f[h].gridifierTrim();
-                if (i.gridifierTrim().length == 0) continue;
+                if (i.length == 0) continue;
                 if (i.search(b) !== -1) {
                     e += " " + b + "(" + c + ")";
                     g = true;
-                } else {
-                    e += " " + i + ")";
-                }
+                } else e += " " + i + ")";
             }
             if (!g) e += " " + b + "(" + c + ")";
             a.style[Prefixer.get("transform", a)] = e.gridifierTrim();
         },
+        style: function(a, b, c) {
+            for (var d = 0; d < b.length; d++) a.style[b[d]] = c;
+        },
         opacity: function(a, b) {
-            var c = [ "-webkit-opacity", "-moz-opacity", "opacity" ];
-            for (var d = 0; d < c.length; d++) a.style[c[d]] = b;
+            this.style(a, this._opacityProps, b);
         },
         perspective: function(a, b) {
-            for (var c = 0; c < this.prefixedPerspectiveProps.length; c++) a.style[this.prefixedPerspectiveProps[c]] = b;
+            this.style(a, this._perspectiveProps, b);
         },
         transformStyle: function(a, b) {
-            for (var c = 0; c < this.prefixedTransformStyleProps.length; c++) a.style[this.prefixedTransformStyleProps[c]] = b;
+            this.style(a, this._transformStyleProps, b);
         },
         backfaceVisibility: function(a, b) {
-            for (var c = 0; c < this.prefixedBackfaceVisibilityProps.length; c++) a.style[this.prefixedBackfaceVisibilityProps[c]] = b;
+            this.style(a, this._backfaceVisibilityProps, b);
         },
         transformOrigin: function(a, b) {
-            for (var c = 0; c < this.prefixedTransformOriginProps.length; c++) {
-                if (typeof a.style[this.prefixedTransformOriginProps[c]] != "undefined") a.style[this.prefixedTransformOriginProps[c]] = b;
+            for (var c = 0; c < this._transformOriginProps.length; c++) {
+                if (typeof a.style[this._transformOriginProps[c]] != "undefined") a.style[this._transformOriginProps[c]] = b;
             }
         }
     },
-    get: {
+    find: {
         byId: function(a) {
             return document.getElementById(a);
         },
@@ -251,7 +313,7 @@ var Dom = {
     },
     remove: {
         byQuery: function(a, b) {
-            var c = Dom.get.byQuery(a, b);
+            var c = Dom.find.byQuery(a, b);
             for (var d = 0; d < c.length; d++) {
                 var e = c[d];
                 e.parentNode.removeChild(e);
@@ -259,5 +321,3 @@ var Dom = {
         }
     }
 };
-
-Dom.has = Dom.hasAttribute;

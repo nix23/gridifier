@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -9,126 +9,71 @@
  * Copyright 2015 nTech
  */
 
-Gridifier.Renderer = function(a, b, c, d) {
-    var e = this;
-    this._gridifier = null;
-    this._connections = null;
-    this._settings = null;
-    this._normalizer = null;
-    this._rendererSchedulator = null;
-    this._rendererConnections = null;
-    this._css = {};
-    this._construct = function() {
-        e._gridifier = a;
-        e._connections = b;
-        e._settings = c;
-        e._normalizer = d;
-        e._rendererConnections = new Gridifier.Renderer.Connections(e._settings);
-        e._rendererSchedulator = new Gridifier.Renderer.Schedulator(e._gridifier, e._settings, e._connections, e, e._rendererConnections);
-    };
-    this._bindEvents = function() {};
-    this._unbindEvents = function() {};
-    this.destruct = function() {
-        e._unbindEvents();
-    };
-    this._construct();
-    return this;
-};
+var Renderer = function() {};
 
-Gridifier.Renderer.SCHEDULED_ITEM_TO_HIDE_DATA_ATTR = "data-gridifier-scheduled-to-hide";
-
-Gridifier.Renderer.SCHEDULED_ITEM_TO_HIDE_DATA_ATTR_VALUE = "yes";
-
-Gridifier.Renderer.prototype.getRendererConnections = function() {
-    return this._rendererConnections;
-};
-
-Gridifier.Renderer.prototype.setSilentRendererInstance = function(a) {
-    this._rendererSchedulator.setSilentRendererInstance(a);
-};
-
-Gridifier.Renderer.prototype.showConnections = function(a) {
-    var b = this;
-    if (!Dom.isArray(a)) var a = [ a ];
-    for (var c = 0; c < a.length; c++) {
-        this.unmarkItemAsScheduledToHide(a[c].item);
-        if (this._rendererConnections.isConnectionItemRendered(a[c])) continue;
-        var d = this._rendererConnections.getCssLeftPropertyValuePerConnection(a[c]);
-        var e = this._rendererConnections.getCssTopPropertyValuePerConnection(a[c]);
-        this._rendererConnections.markConnectionItemAsRendered(a[c]);
-        this._rendererSchedulator.reinit();
-        this._rendererSchedulator.scheduleShow(a[c], d, e);
-    }
-};
-
-Gridifier.Renderer.prototype.markItemsAsScheduledToHide = function(a) {
-    for (var b = 0; b < a.length; b++) {
-        a[b].setAttribute(Gridifier.Renderer.SCHEDULED_ITEM_TO_HIDE_DATA_ATTR, Gridifier.Renderer.SCHEDULED_ITEM_TO_HIDE_DATA_ATTR_VALUE);
-    }
-};
-
-Gridifier.Renderer.prototype.unmarkItemAsScheduledToHide = function(a) {
-    a.removeAttribute(Gridifier.Renderer.SCHEDULED_ITEM_TO_HIDE_DATA_ATTR);
-};
-
-Gridifier.Renderer.prototype.wasItemScheduledToHide = function(a) {
-    return Dom.hasAttribute(a, Gridifier.Renderer.SCHEDULED_ITEM_TO_HIDE_DATA_ATTR);
-};
-
-Gridifier.Renderer.prototype.hideConnections = function(a) {
-    var b = this;
-    if (!Dom.isArray(a)) var a = [ a ];
-    for (var c = 0; c < a.length; c++) {
-        if (!this.wasItemScheduledToHide(a[c].item)) {
-            continue;
+proto(Renderer, {
+    show: function(a) {
+        var b = rendererCns;
+        if (!Dom.isArray(a)) var a = [ a ];
+        for (var c = 0; c < a.length; c++) {
+            var d = a[c];
+            this.unmarkAsSchToHide(d.item);
+            if (b.isRendered(d)) continue;
+            b.markAsRendered(d);
+            rendererQueue.schedule(RENDER_OPS.SHOW, d, b.left(d), b.top(d));
         }
-        var d = this._rendererConnections.getCssLeftPropertyValuePerConnection(a[c]);
-        var e = this._rendererConnections.getCssTopPropertyValuePerConnection(a[c]);
-        this._rendererConnections.unmarkConnectionItemAsRendered(a[c]);
-        this._rendererSchedulator.reinit();
-        this._rendererSchedulator.scheduleHide(a[c], d, e);
-    }
-};
-
-Gridifier.Renderer.prototype.renderTransformedConnections = function(a) {
-    this.renderConnections(a, false);
-};
-
-Gridifier.Renderer.prototype.renderConnections = function(a, b) {
-    var b = b || false;
-    for (var c = 0; c < a.length; c++) {
-        if (b) {
-            var d = false;
-            for (var e = 0; e < b.length; e++) {
-                if (a[c].itemGUID == b[e].itemGUID) {
-                    d = true;
-                    break;
+    },
+    hide: function(a) {
+        var b = rendererCns;
+        if (!Dom.isArray(a)) var a = [ a ];
+        for (var c = 0; c < a.length; c++) {
+            var d = a[c];
+            if (!this.wasSchToHide(d.item)) continue;
+            b.unmarkAsRendered(d);
+            rendererQueue.schedule(RENDER_OPS.HIDE, d, b.left(d), b.top(d));
+        }
+    },
+    renderRepositioned: function(a) {
+        this.render(a, false);
+    },
+    render: function(a, b) {
+        var c = rendererCns;
+        var b = b || false;
+        for (var d = 0; d < a.length; d++) {
+            var e = a[d];
+            if (b !== false) {
+                var f = false;
+                for (var g = 0; g < b.length; g++) {
+                    if (a[d].itemGUID == b[g].itemGUID) {
+                        f = true;
+                        break;
+                    }
                 }
+                if (f) continue;
             }
-            if (d) continue;
+            rendererQueue.schedule(RENDER_OPS.RENDER, e, c.left(e), c.top(e));
         }
-        var f = this._rendererConnections.getCssLeftPropertyValuePerConnection(a[c]);
-        var g = this._rendererConnections.getCssTopPropertyValuePerConnection(a[c]);
-        this._rendererSchedulator.reinit();
-        this._rendererSchedulator.scheduleRender(a[c], f, g);
+    },
+    renderAfterDelay: function(a, b) {
+        var b = b || C.RENDER_DEF_DELAY;
+        for (var c = 0; c < a.length; c++) rendererQueue.schedule(RENDER_OPS.DEL_RENDER, a[c], null, null, b);
+    },
+    rotate: function(a) {
+        var b = [];
+        for (var c = 0; c < a.length; c++) {
+            var d = cnsCore.find(a[c]);
+            rendererCns.unmarkAsRendered(d);
+            b.push(d);
+        }
+        this.show(b);
+    },
+    markAsSchToHide: function(a) {
+        for (var b = 0; b < a.length; b++) Dom.set(a[b].item, C.REND.SCH_TO_HIDE_DATA, "y");
+    },
+    unmarkAsSchToHide: function(a) {
+        Dom.rm(a, C.REND.SCH_TO_HIDE_DATA);
+    },
+    wasSchToHide: function(a) {
+        return Dom.has(a, C.REND.SCH_TO_HIDE_DATA);
     }
-};
-
-Gridifier.Renderer.prototype.renderConnectionsAfterDelay = function(a, b) {
-    var c = this;
-    var b = b || 40;
-    for (var d = 0; d < a.length; d++) {
-        this._rendererSchedulator.reinit();
-        this._rendererSchedulator.scheduleDelayedRender(a[d], null, null, b);
-    }
-};
-
-Gridifier.Renderer.prototype.rotateItems = function(a) {
-    var b = [];
-    for (var c = 0; c < a.length; c++) {
-        var d = this._connections.findConnectionByItem(a[c]);
-        this._rendererConnections.unmarkConnectionItemAsRendered(d);
-        b.push(d);
-    }
-    this.showConnections(b);
-};
+});

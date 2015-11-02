@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -9,185 +9,80 @@
  * Copyright 2015 nTech
  */
 
-Gridifier.EventEmitter = function(a) {
-    var b = this;
-    b._gridifier = null;
-    b._showCallbacks = [];
-    b._hideCallbacks = [];
-    b._gridSizesChangeCallbacks = [];
-    b._responsiveTransformCallbacks = [];
-    b._gridRetransformCallbacks = [];
-    b._connectionCreateCallbacks = [];
-    b._disconnectCallbacks = [];
-    b._insertCallbacks = [];
-    b._insertEventTimeout = null;
-    b._dragEndCallbacks = [];
-    b._kernelCallbacks = {
-        itemsReappendExecutionEndPerDragifier: null,
-        beforeItemShowPerRetransformSorter: null
-    };
-    this._css = {};
-    this._construct = function() {
-        b._gridifier = a;
-        b._bindEmitterToGridifier();
-    };
-    this._bindEvents = function() {};
-    this._unbindEvents = function() {};
-    this.destruct = function() {
-        b._unbindEvents();
-    };
-    this._construct();
-    return this;
+var EventEmitter = function() {
+    this._callbacks = {};
+    this._insertEvTimeout = null;
+    this._init();
 };
 
-Gridifier.EventEmitter.prototype._bindEmitterToGridifier = function() {
-    var a = this;
-    this._gridifier.onShow = function(b) {
-        a.onShow.call(a, b);
-    };
-    this._gridifier.onHide = function(b) {
-        a.onHide.call(a, b);
-    };
-    this._gridifier.onGridSizesChange = function(b) {
-        a.onGridSizesChange.call(a, b);
-    };
-    this._gridifier.onResponsiveTransform = function(b) {
-        a.onResponsiveTransform.call(a, b);
-    };
-    this._gridifier.onGridRetransform = function(b) {
-        a.onGridRetransform.call(a, b);
-    };
-    this._gridifier.onConnectionCreate = function(b) {
-        a.onConnectionCreate.call(a, b);
-    };
-    this._gridifier.onDisconnect = function(b) {
-        a.onDisconnect.call(a, b);
-    };
-    this._gridifier.onInsert = function(b) {
-        a.onInsert.call(a, b);
-    };
-    this._gridifier.onDragEnd = function(b) {
-        a.onDragEnd.call(a, b);
-    };
-};
-
-Gridifier.EventEmitter.prototype.onShow = function(a) {
-    this._showCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onHide = function(a) {
-    this._hideCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onResponsiveTransform = function(a) {
-    this._responsiveTransformCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onGridRetransform = function(a) {
-    this._gridRetransformCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onGridSizesChange = function(a) {
-    this._gridSizesChangeCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onConnectionCreate = function(a) {
-    this._connectionCreateCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onDisconnect = function(a) {
-    this._disconnectCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onInsert = function(a) {
-    this._insertCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onDragEnd = function(a) {
-    this._dragEndCallbacks.push(a);
-};
-
-Gridifier.EventEmitter.prototype.onItemsReappendExecutionEndPerDragifier = function(a) {
-    this._kernelCallbacks.itemsReappendExecutionEndPerDragifier = a;
-};
-
-Gridifier.EventEmitter.prototype.onBeforeShowPerRetransformSorter = function(a) {
-    this._kernelCallbacks.beforeItemShowPerRetransformSorter = a;
-};
-
-Gridifier.EventEmitter.prototype.emitShowEvent = function(a) {
-    for (var b = 0; b < this._showCallbacks.length; b++) {
-        this._showCallbacks[b](a);
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitHideEvent = function(a) {
-    for (var b = 0; b < this._hideCallbacks.length; b++) {
-        this._hideCallbacks[b](a);
-    }
-    var c = this._gridifier.getCollector();
-    if (c.isItemRestrictedToCollect(a)) {
-        for (var d = 0; d < this._disconnectCallbacks.length; d++) this._disconnectCallbacks[d](a);
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitGridSizesChangeEvent = function() {
-    for (var a = 0; a < this._gridSizesChangeCallbacks.length; a++) {
-        this._gridSizesChangeCallbacks[a]();
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitResponsiveTransformEvent = function(a, b, c) {
-    for (var d = 0; d < this._responsiveTransformCallbacks.length; d++) {
-        this._responsiveTransformCallbacks[d](a, b, c);
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitGridRetransformEvent = function() {
-    for (var a = 0; a < this._gridRetransformCallbacks.length; a++) {
-        this._gridRetransformCallbacks[a]();
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitConnectionCreateEvent = function(a) {
-    for (var b = 0; b < this._connectionCreateCallbacks.length; b++) {
-        (function(a, b) {
-            setTimeout(function() {
-                a(b);
-            }, 0);
-        })(this._connectionCreateCallbacks[b], a);
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitInsertEvent = function(a) {
-    var b = function() {
-        for (var b = 0; b < this._insertCallbacks.length; b++) {
-            this._insertCallbacks[b](a);
+proto(EventEmitter, {
+    _init: function() {
+        var a = this;
+        var b = function(b, c, d) {
+            for (var e in b) {
+                var f = b[e];
+                this._callbacks[f] = c ? null : [];
+                (function(b) {
+                    d["on" + b] = function(d) {
+                        if (!c) a._callbacks[b].push(d); else a._callbacks[b] = d;
+                    };
+                })(f);
+            }
+        };
+        b.call(a, EV, false, gridifier);
+        b.call(a, INT_EV, true, a);
+    },
+    _getArgs: function(a, b, c) {
+        if (!Dom.hasVal(a, b)) err("no " + b + " to emit");
+        var d = [];
+        Array.prototype.push.apply(d, c);
+        d.shift();
+        return d;
+    },
+    emit: function(a) {
+        var b = this._getArgs(EV, a, arguments);
+        var c = this;
+        if (a == EV.INSERT) {
+            this._emitInsertEvent(b[0]);
+            return;
         }
-    };
-    if (this._insertEventTimeout != null) {
-        clearTimeout(this._insertEventTimeout);
-        this._insertEventTimeout = null;
+        for (var d = 0; d < this._callbacks[a].length; d++) {
+            if (a == EV.REPOSITION || a == EV.REPOSITION_END) {
+                (function(a, b) {
+                    setTimeout(function() {
+                        a.apply(c, b);
+                    }, 0);
+                })(this._callbacks[a][d], b);
+            } else this._callbacks[a][d].apply(this, b);
+        }
+        if (a == EV.HIDE && collector.isNotCollectable(b[0])) {
+            for (var d = 0; d < this._callbacks[EV.DISCONNECT].length; d++) this._callbacks[EV.DISCONNECT][d](b[0]);
+        }
+    },
+    _emitInsertEvent: function(a) {
+        var b = function(a) {
+            for (var b = 0; b < this._callbacks[EV.INSERT].length; b++) this._callbacks[EV.INSERT][b](a);
+        };
+        if (this._insertEvTimeout != null) {
+            clearTimeout(this._insertEvTimeout);
+            this._insertEvTimeout = null;
+            a = a.concat(this._insertEvItems);
+        }
+        var c = this;
+        this._insertEvItems = a;
+        this._insertEvTimeout = setTimeout(function() {
+            c._insertEvTimeout = null;
+            b.call(c, a);
+        }, 20);
+    },
+    emitInternal: function(a) {
+        var b = this._getArgs(INT_EV, a, arguments);
+        if (this._callbacks[a] == null) return;
+        this._callbacks[a].apply(this, b);
+        if (a == INT_EV.REPOSITION_END_FOR_DRAG) this._callbacks[a] = null;
+    },
+    rmInternal: function(a) {
+        this._getArgs(INT_EV, a, arguments);
+        this._callbacks[a] = null;
     }
-    var c = this;
-    this._insertEventTimeout = setTimeout(function() {
-        b.call(c);
-    }, 20);
-};
-
-Gridifier.EventEmitter.prototype.emitDragEndEvent = function(a) {
-    for (var b = 0; b < this._dragEndCallbacks.length; b++) {
-        this._dragEndCallbacks[b](a);
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitItemsReappendExecutionEndPerDragifier = function() {
-    if (this._kernelCallbacks.itemsReappendExecutionEndPerDragifier != null) {
-        this._kernelCallbacks.itemsReappendExecutionEndPerDragifier();
-        this._kernelCallbacks.itemsReappendExecutionEndPerDragifier = null;
-    }
-};
-
-Gridifier.EventEmitter.prototype.emitBeforeShowPerRetransformSortEvent = function() {
-    if (this._kernelCallbacks.beforeItemShowPerRetransformSorter != null) this._kernelCallbacks.beforeItemShowPerRetransformSorter();
-};
+});

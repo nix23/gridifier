@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -10,8 +10,17 @@
  */
 
 var Event = function() {
-    var a = 0;
-    function b(a) {
+    var a = "gridifierEvents";
+    var b = "gridifierHandle";
+    var c = function() {
+        var a = new Date().getTime();
+        return "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g, function(b) {
+            var c = (a + Math.random() * 16) % 16 | 0;
+            a = Math.floor(a / 16);
+            return (b == "x" ? c : c & 3 | 8).toString(16);
+        });
+    };
+    function d(a) {
         a = a || window.event;
         if (a.isFixed) {
             return a;
@@ -39,63 +48,61 @@ var Event = function() {
         }
         return a;
     }
-    function c(a) {
-        a = b(a);
-        var c = this.events[a.type];
-        for (var d in c) {
-            var e = c[d].call(this, a);
-            if (e === false) {
-                a.preventDefault();
-                a.stopPropagation();
-            } else if (e !== undefined) {
-                a.result = e;
+    function e(b) {
+        b = d(b);
+        var c = this[a][b.type];
+        for (var e in c) {
+            var f = c[e].call(this, b);
+            if (f === false) {
+                b.preventDefault();
+                b.stopPropagation();
+            } else if (f !== undefined) {
+                b.result = f;
             }
-            if (a.stopNow) break;
+            if (b.stopNow) break;
         }
     }
     return {
-        add: function(b, d, e) {
-            if (b.setInterval && (b != window && !b.frameElement)) {
-                b = window;
+        add: function(d, f, g) {
+            if (d.setInterval && (d != window && !d.frameElement)) {
+                d = window;
             }
-            if (!e.guid) {
-                e.guid = ++a;
-            }
-            if (!b.events) {
-                b.events = {};
-                b.handle = function(a) {
+            if (!g.guid) g.guid = c();
+            if (!d[a]) {
+                d[a] = {};
+                d[b] = function(a) {
                     if (typeof Event !== "undefined") {
-                        return c.call(b, a);
+                        return e.call(d, a);
                     }
                 };
             }
-            if (!b.events[d]) {
-                b.events[d] = {};
-                if (b.addEventListener) b.addEventListener(d, b.handle, false); else if (b.attachEvent) b.attachEvent("on" + d, b.handle);
+            if (!d[a][f]) {
+                d[a][f] = {};
+                if (d.addEventListener) d.addEventListener(f, d[b], false); else if (d.attachEvent) d.attachEvent("on" + f, d[b]);
             }
-            b.events[d][e.guid] = e;
+            d[a][f][g.guid] = g;
         },
-        remove: function(a, b, c) {
-            var d = a.events && a.events[b];
-            if (!d) return;
-            if (!c) {
-                for (var e in d) {
-                    delete a.events[b][e];
+        rm: function(c, d, e) {
+            var f = c[a] && c[a][d];
+            if (!f) return;
+            if (!e) {
+                for (var g in f) {
+                    delete c[a][d][g];
                 }
                 return;
             } else {
-                delete d[c.guid];
-                for (var f in d) return;
+                delete f[e.guid];
+                for (var h in f) return;
             }
-            if (a.removeEventListener) a.removeEventListener(b, a.handle, false); else if (a.detachEvent) a.detachEvent("on" + b, a.handle);
-            delete a.events[b];
-            for (var f in a.events) return;
+            if (c.removeEventListener) c.removeEventListener(d, c[b], false); else if (c.detachEvent) c.detachEvent("on" + d, c[b]);
+            delete c[a][d];
+            for (var h in c[a]) return;
             try {
-                delete a.handle;
-                delete a.events;
-            } catch (g) {
-                a.removeAttribute("handle");
-                a.removeAttribute("events");
+                delete c[b];
+                delete c[a];
+            } catch (i) {
+                c.removeAttribute(b);
+                c.removeAttribute(a);
             }
         }
     };

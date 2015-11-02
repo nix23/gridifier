@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -9,79 +9,49 @@
  * Copyright 2015 nTech
  */
 
-Gridifier.Iterator = function(a, b, c, d, e) {
-    var f = this;
-    this._settings = null;
-    this._collector = null;
-    this._connections = null;
-    this._connectionsSorter = null;
-    this._guid = null;
-    this._css = {};
-    this._construct = function() {
-        f._settings = a;
-        f._collector = b;
-        f._connections = c;
-        f._connectionsSorter = d;
-        f._guid = e;
-    };
-    this._bindEvents = function() {};
-    this._unbindEvents = function() {};
-    this.destruct = function() {
-        f._unbindEvents();
-    };
-    this._construct();
-    return this;
-};
-
-Gridifier.Iterator.prototype.getFirst = function() {
-    var a = this._connections.get();
-    if (a.length == 0) return null;
-    a = this._connectionsSorter.sortConnectionsPerReappend(a);
-    return a[0].item;
-};
-
-Gridifier.Iterator.prototype.getLast = function() {
-    var a = this._connections.get();
-    if (a.length == 0) return null;
-    a = this._connectionsSorter.sortConnectionsPerReappend(a);
-    return a[a.length - 1].item;
-};
-
-Gridifier.Iterator.prototype.getNext = function(a) {
-    var b = this._collector.toDOMCollection(a);
-    a = b[0];
-    var c = this._connections.get();
-    if (c.length == 0) return null;
-    c = this._connectionsSorter.sortConnectionsPerReappend(c);
-    for (var d = 0; d < c.length; d++) {
-        if (this._guid.getItemGUID(c[d].item) == this._guid.getItemGUID(a)) {
-            if (d + 1 > c.length - 1) return null;
-            return c[d + 1].item;
+var Iterator = function() {
+    var a = this;
+    self(this, {
+        first: function() {
+            return a.get("first");
+        },
+        last: function() {
+            return a.get("last");
+        },
+        next: function(b) {
+            return a.get("next", b);
+        },
+        prev: function(b) {
+            return a.get("prev", b);
+        },
+        all: function() {
+            return a.get("all");
         }
-    }
-    return null;
+    });
 };
 
-Gridifier.Iterator.prototype.getPrev = function(a) {
-    var b = this._collector.toDOMCollection(a);
-    a = b[0];
-    var c = this._connections.get();
-    if (c.length == 0) return null;
-    c = this._connectionsSorter.sortConnectionsPerReappend(c);
-    for (var d = c.length - 1; d >= 0; d--) {
-        if (this._guid.getItemGUID(c[d].item) == this._guid.getItemGUID(a)) {
-            if (d - 1 < 0) return null;
-            return c[d - 1].item;
+proto(Iterator, {
+    get: function(a, b) {
+        var c = connections.get();
+        if (c.length == 0) return a == "all" ? [] : null;
+        c = cnsSorter.sortForReappend(c);
+        if (a == "first") return c[0].item; else if (a == "last") return c[c.length - 1].item;
+        var d = function(a, b) {
+            return guid.get(a) == guid.get(gridItem.toNative(b)[0]);
+        };
+        if (a == "next") {
+            for (var e = 0; e < c.length; e++) {
+                if (d(c[e].item, b)) return e + 1 > c.length - 1 ? null : c[e + 1].item;
+            }
+        } else if (a == "prev") {
+            for (var e = c.length - 1; e >= 0; e--) {
+                if (d(c[e].item, b)) return e - 1 < 0 ? null : c[e - 1].item;
+            }
+        } else if (a == "all") {
+            var f = [];
+            for (var e = 0; e < c.length; e++) f.push(c[e].item);
+            return f;
         }
+        return null;
     }
-    return null;
-};
-
-Gridifier.Iterator.prototype.getAll = function() {
-    var a = this._connections.get();
-    if (a.length == 0) return [];
-    var b = this._connectionsSorter.sortConnectionsPerReappend(a);
-    var c = [];
-    for (var d = 0; d < b.length; d++) c.push(b[d].item);
-    return c;
-};
+});

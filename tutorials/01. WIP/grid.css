@@ -1,7 +1,7 @@
 body {
     width: 100%;
     height: 100%;
-    background: red;
+    background: rgb(235,235,235);
     overflow-x: hidden;
     overflow-y: scroll;
 }
@@ -9,7 +9,7 @@ body {
 .gridWrapper {
     width: 100%;
     height: 100%;
-    background: blue;
+    /*background: blue;*/
     overflow: hidden;
 }
 
@@ -21,4 +21,8 @@ body {
     visibility: hidden;
     width: 20%;
     margin: 2.5%;
+}
+
+.grid > div {
+    visibility: hidden;
 }

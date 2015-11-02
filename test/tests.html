@@ -25,7 +25,7 @@
     <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <h1 id="qunit-header">QUnit example</h1>
+    <h1 id="qunit-header">Gridifier v 2.x.x tests</h1>
     <h2 id="qunit-banner"></h2>
     <h2 id="qunit-userAgent"></h2>
     <ol id="qunit-tests"></ol>
@@ -39,58 +39,327 @@
     <script src="../vendor/js/modernizr.custom.js"></script>
 
     <!-- Gridifier includes -->
-    <!-- Place here path to tested build version -->
-    <!-- If you have build custom version, replace this with following line: -->
-    <!-- <script src="../build/gridifier-custom.min.js"></script> -->
-    <script src="../build/gridifier.min.js"></script>
+    <script src="../src/core/bootstrap/funcs.js"></script>
+    <script src="../src/core/bootstrap/mocks.js"></script>
+    <script src="../src/core/bootstrap/vars.js"></script>
+    <script src="../src/core/bootstrap/event.js"></script>
+    <script src="../src/core/bootstrap/prefixer.js"></script>
+    <script src="../src/core/bootstrap/dom.js"></script>
+    <script src="../src/core/bootstrap/sizesResolver/sizesResolver.js"></script>
+    <script src="../src/core/bootstrap/sizesResolver/init.js"></script>
+    <script src="../src/core/bootstrap/sizesResolver/outerWidth.js"></script>
+    <script src="../src/core/bootstrap/sizesResolver/outerHeight.js"></script>
+
+    <script src="../src/api/coordsChanger/coordsChanger.js"></script>
+    <script src="../src/api/coordsChanger/default.js"></script>
+    <script src="../src/api/coordsChanger/position.js"></script>
+    <script src="../src/api/coordsChanger/translate.js"></script>
+
+    <script src="../src/api/sort/rsort.js"></script>
+    <script src="../src/api/sort/rsortHelpers.js"></script>
+    <script src="../src/api/sort/sortHelpers.js"></script>
+
+    <script src="../src/api/toggle/factory/rotate.js"></script>
+    <script src="../src/api/toggle/factory/scale.js"></script>
+    <script src="../src/api/toggle/factory/slide.js"></script>
+
+    <script src="../src/api/toggle/fade.js"></script>
+    <script src="../src/api/toggle/rotate.js"></script>
+    <script src="../src/api/toggle/scale.js"></script>
+    <script src="../src/api/toggle/slide.js"></script>
+    <script src="../src/api/toggle/syncer.js"></script>
+    <script src="../src/api/toggle/toggle.js"></script>
+    <script src="../src/api/toggle/visibility.js"></script>
+
+    <script src="../src/api/dragifier/dragifier.js"></script>
+
+    <script src="../src/api/settings/settings.js"></script>
+    <script src="../src/api/settings/funcs.js"></script>
+
+    <script src="../src/core/core/connections/connections.js"></script>
+    <script src="../src/core/core/connections/intersector.js"></script>
+    <script src="../src/core/core/connections/ranges.js"></script>
+    <script src="../src/core/core/connections/sorter.js"></script>
+    <script src="../src/core/core/connections/xyIntersector.js"></script>
+
+    <script src="../src/core/core/connectors/connectors.js"></script>
+    <script src="../src/core/core/connectors/cleaner.js"></script>
+    <script src="../src/core/core/connectors/intersector.js"></script>
+    <script src="../src/core/core/connectors/reposition.js"></script>
+    <script src="../src/core/core/connectors/rounder.js"></script>
+    <script src="../src/core/core/connectors/selector.js"></script>
+    <script src="../src/core/core/connectors/shifter.js"></script>
+    <script src="../src/core/core/connectors/sorter.js"></script>
+
+    <script src="../src/core/core/item/collector.js"></script>
+    <script src="../src/core/core/item/guid.js"></script>
+    <script src="../src/core/core/item/item.js"></script>
+
+    <script src="../src/core/core/manager/cssManager.js"></script>
+    <script src="../src/core/core/manager/srManager.js"></script>
+
+    <script src="../src/core/core/operation/disconnector.js"></script>
+    <script src="../src/core/core/operation/filtrator.js"></script>
+    <script src="../src/core/core/operation/resorter.js"></script>
+
+    <script src="../src/core/core/antialiaser.js"></script>
+    <script src="../src/core/core/core.js"></script>
+    <script src="../src/core/core/eventEmitter.js"></script>
+    <script src="../src/core/core/iterator.js"></script>
+    <script src="../src/core/core/operation.js"></script>
+    <script src="../src/core/core/position.js"></script>
+    <script src="../src/core/core/rounder.js"></script>
+
+    <script src="../src/core/discretizer/discretizer.js"></script>
+    <script src="../src/core/discretizer/core.js"></script>
+
+    <script src="../src/core/dragifier/dragifier.js"></script>
+    <script src="../src/core/dragifier/core.js"></script>
+    <script src="../src/core/dragifier/intersection/item.js"></script>
+    <script src="../src/core/dragifier/discretization/cells.js"></script>
+    <script src="../src/core/dragifier/discretization/item.js"></script>
+
+    <script src="../src/core/grid/horizontal/appender.js"></script>
+    <script src="../src/core/grid/horizontal/connections.js"></script>
+    <script src="../src/core/grid/horizontal/coordsFinder.js"></script>
+    <script src="../src/core/grid/horizontal/prepender.js"></script>
+    <script src="../src/core/grid/horizontal/reversedAppender.js"></script>
+    <script src="../src/core/grid/horizontal/reversedPrepender.js"></script>
+
+    <script src="../src/core/grid/vertical/appender.js"></script>
+    <script src="../src/core/grid/vertical/connections.js"></script>
+    <script src="../src/core/grid/vertical/coordsFinder.js"></script>
+    <script src="../src/core/grid/vertical/prepender.js"></script>
+    <script src="../src/core/grid/vertical/reversedAppender.js"></script>
+    <script src="../src/core/grid/vertical/reversedPrepender.js"></script>
+
+    <script src="../src/core/grid/grid.js"></script>
+
+    <script src="../src/core/images/loader.js"></script>
+    <script src="../src/core/images/image.js"></script>
+
+    <script src="../src/core/inserter/queue.js"></script>
+    <script src="../src/core/inserter/insert.js"></script>
+    <script src="../src/core/inserter/prepend.js"></script>
+    <script src="../src/core/inserter/append.js"></script>
+
+    <script src="../src/core/renderer/renderer.js"></script>
+    <script src="../src/core/renderer/queue.js"></script>
+    <script src="../src/core/renderer/connections.js"></script>
+    <script src="../src/core/renderer/silent.js"></script>
+
+    <script src="../src/core/reposition/data.js"></script>
+    <script src="../src/core/reposition/queue.js"></script>
+    <script src="../src/core/reposition/reposition.js"></script>
 
     <!-- Tests includes -->
     <script>
-        window.SizesResolver = Gridifier.Bridge.SizesResolver;
-        window.Prefixer = Gridifier.Bridge.Prefixer;
-        window.Dom = Gridifier.Bridge.Dom;
+        window.fns = {
+            nop: function() { return function() {}; },
+            t: function() { return function() { return true; }; },
+            f: function() { return function() { return false; }; }
+        };
+
+        window.asyncTests = {
+            _data: [],
+            _isExecuted: false,
+
+            add: function(assert, initFn, checkFn, checkDelay, context) {
+                var done = assert.async();
+                var me = this;
+
+                setTimeout(function() {
+                    me._data.push({
+                        done: done,
+                        initFn: initFn,
+                        checkFn: checkFn,
+                        checkDelay: checkDelay,
+                        context: context
+                    });
+
+                    me.exec();
+                }, 100);
+            },
+
+            exec: function() {
+                if(this._data.length == 0 || this._isExecuted)
+                    return;
+
+                var me = this;
+                this._isExecuted = true;
+                var next = this._data.shift();
+
+                next.initFn.call(next.context);
+                setTimeout(function() {
+                    next.checkFn.call(next.context);
+                    next.done();
+                    clearTestData();
+
+                    me._isExecuted = false;
+                    me.exec();
+                }, next.checkDelay);
+            }
+        };
+
+        window.browserDetector = {
+            isIe8: function() {
+                var hasIe8CondClass = false;
+
+                var htmlClasses = document.querySelector("html").className.split(' ');
+                for(var i = 0; i < htmlClasses.length; i++) {
+                    if(htmlClasses[i] == "lt-ie9")
+                        hasIe8CondClass = true;
+                }
+
+                return !Modernizr.csscalc && hasIe8CondClass;
+            }
+        };
+
+        var gridifier = window;
+
+        Dom.init();
+        SizesResolver.init();
 
         $(document).ready(function() {
             window.$testStyles = $(".testStyles");
             window.$testContent = $(".testContent");
 
             window.$testStyles.append = function(stylesContent) {
-                $testStyles.html(stylesContent);
+                if(browserDetector.isIe8())
+                    $testStyles.prop('styleSheet').cssText = stylesContent;
+                else
+                    $testStyles.html(stylesContent);
             }
 
             window.clearTestData = function() {
+                Logger = null;
+                sourceSettings = undefined;
+                sourceGrid = undefined;
                 $testStyles.html("");
                 $testContent.html("");
             }
         });
     </script>
 
-    <!-- Tests -->
-    <script src="bootstrap/sizesResolver/outerWidth/pxWidthGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerWidth/pxWidthPxPaddingGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerWidth/pxWidthPxMarginGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerWidth/pxWidthPxBorderGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerWidth/ptWidthGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerWidth/ptWidthPtPaddingGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerWidth/ptWidthPtMarginGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerHeight/pxHeightGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerHeight/pxHeightPxPaddingGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerHeight/pxHeightPxMarginGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerHeight/pxHeightPxBorderGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerHeight/ptHeightGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerHeight/ptHeightPtPaddingGrid.js"></script>
-    <script src="bootstrap/sizesResolver/outerHeight/ptHeightPtMarginGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerWidth/pxWidthGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerWidth/pxWidthPxPaddingGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerWidth/pxWidthPxMarginGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerWidth/pxWidthPxBorderGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerWidth/ptWidthGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerWidth/ptWidthPtPaddingGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerWidth/ptWidthPtMarginGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerHeight/pxHeightGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerHeight/pxHeightPxPaddingGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerHeight/pxHeightPxMarginGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerHeight/pxHeightPxBorderGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerHeight/ptHeightGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerHeight/ptHeightPtPaddingGrid.js"></script>
+    <script src="../test/bootstrap/sizesResolver/outerHeight/ptHeightPtMarginGrid.js"></script>
 
-    <script src="api/sort.js"></script>
+    <script src="../test/bootstrap/sizesResolver/sizesResolver/init.js"></script>
+    <script src="../test/bootstrap/sizesResolver/sizesResolver/sizesResolver.js"></script>
+    <script src="../test/bootstrap/sizesResolver/sizesResolver/getPtCSSVal.js"></script>
+    <script src="../test/bootstrap/sizesResolver/sizesResolver/hasPtCSSVal.js"></script>
+    <script src="../test/bootstrap/sizesResolver/sizesResolver/rcTwoSidePropPtVals.js"></script>
+    <script src="../test/bootstrap/sizesResolver/sizesResolver/outerWidth.js"></script>
+    <script src="../test/bootstrap/sizesResolver/sizesResolver/outerHeight.js"></script>
 
-    <script src="bootstrap/dom.js"></script>
-    <script src="bootstrap/sizesResolver/sizesResolver.js"></script>
+    <script src="../test/bootstrap/dom/dom.js"></script>
+    <script src="../test/bootstrap/dom/css3TransformProp.js"></script>
+    <script src="../test/bootstrap/dom/css3TransitionProp.js"></script>
+    <script src="../test/bootstrap/event.js"></script>
+    <script src="../test/bootstrap/funcs.js"></script>
+    <script src="../test/bootstrap/prefixer.js"></script>
 
-    <script src="core/sizesResolverManager.js"></script>
-    
-    <script src="sizesTransformer/sizesTransformer.js"></script>
+    <script src="../test/api/dragifier/dragifier.js"></script>
+    <script src="../test/api/settings/settings.js"></script>
+    <script src="../test/api/sort/rsort.js"></script>
+    <script src="../test/api/sort/rsortHelpers.js"></script>
+    <script src="../test/api/sort/sortHelpers.js"></script>
+    <script src="../test/api/toggle/toggle.js"></script>
 
-    <script src="discretizer/verticalCore.js"></script>
-    <script src="discretizer/horizontalCore.js"></script>
+    <script src="../test/core/connections/connections.js"></script>
+    <script src="../test/core/connections/intersector.js"></script>
+    <script src="../test/core/connections/ranges.js"></script>
+    <script src="../test/core/connections/sorter.js"></script>
+    <script src="../test/core/connections/xyIntersector.js"></script>
+
+    <script src="../test/core/connectors/connectors.js"></script>
+    <script src="../test/core/connectors/cleaner.js"></script>
+    <script src="../test/core/connectors/intersector.js"></script>
+    <script src="../test/core/connectors/selector.js"></script>
+    <script src="../test/core/connectors/sorter.js"></script>
+    <script src="../test/core/connectors/reposition.js"></script>
+    <script src="../test/core/connectors/rounder.js"></script>
+    <script src="../test/core/connectors/shifter.js"></script>
+
+    <script src="../test/core/item/guid.js"></script>
+    <script src="../test/core/item/item.js"></script>
+    <script src="../test/core/item/collector.js"></script>
+
+    <script src="../test/core/manager/cssManager.js"></script>
+    <script src="../test/core/manager/srManager/srManager.js"></script>
+    <script src="../test/core/manager/srManager/outerWidth.js"></script>
+    <script src="../test/core/manager/srManager/outerHeight.js"></script>
+
+    <script src="../test/core/operation/disconnector.js"></script>
+    <script src="../test/core/operation/filtrator.js"></script>
+    <script src="../test/core/operation/resorter.js"></script>
+
+    <script src="../test/core/antialiaser.js"></script>
+    <script src="../test/core/core.js"></script>
+    <script src="../test/core/eventEmitter.js"></script>
+    <script src="../test/core/iterator.js"></script>
+    <script src="../test/core/operation.js"></script>
+    <script src="../test/core/position.js"></script>
+    <script src="../test/core/rounder.js"></script>
+
+    <script src="../test/discretizer/core.js"></script>
+    <script src="../test/discretizer/discretizer.js"></script>
+    <script src="../test/discretizer/yCore.js"></script>
+    <script src="../test/discretizer/xCore.js"></script>
+
+    <script src="../test/dragifier/discretization/cells.js"></script>
+    <script src="../test/dragifier/discretization/item.js"></script>
+    <script src="../test/dragifier/intersection/item.js"></script>
+    <script src="../test/dragifier/core.js"></script>
+
+    <script src="../test/dragifier/dragifier/dragifier.js"></script>
+    <script src="../test/dragifier/dragifier/touchHandlers.js"></script>
+    <script src="../test/dragifier/dragifier/mouseHandlers.js"></script>
+
+    <script src="../test/grid/grid.js"></script>
+    <script src="../test/grid/positionCore.js"></script>
+
+    <script src="../test/grid/vertical/appender.js"></script>
+    <script src="../test/grid/vertical/connections.js"></script>
+    <script src="../test/grid/vertical/coordsFinder.js"></script>
+    <script src="../test/grid/vertical/prepender.js"></script>
+    <script src="../test/grid/vertical/reversedAppender.js"></script>
+    <script src="../test/grid/vertical/reversedPrepender.js"></script>
+
+    <script src="../test/grid/horizontal/appender.js"></script>
+    <script src="../test/grid/horizontal/connections.js"></script>
+    <script src="../test/grid/horizontal/coordsFinder.js"></script>
+    <script src="../test/grid/horizontal/prepender.js"></script>
+    <script src="../test/grid/horizontal/reversedAppender.js"></script>
+    <script src="../test/grid/horizontal/reversedPrepender.js"></script>
+
+    <script src="../test/inserter/append.js"></script>
+    <script src="../test/inserter/insert.js"></script>
+    <script src="../test/inserter/prepend.js"></script>
+    <script src="../test/inserter/queue.js"></script>
+
+    <script src="../test/images/image.js"></script>
+    <script src="../test/images/loader.js"></script>
+
+    <script src="../test/renderer/connections.js"></script>
+    <script src="../test/renderer/queue.js"></script>
+    <script src="../test/renderer/renderer.js"></script>
+    <script src="../test/renderer/silent.js"></script>
+
+    <script src="../test/reposition/data.js"></script>
+    <script src="../test/reposition/queue.js"></script>
+    <script src="../test/reposition/reposition.js"></script>
 </body>
 </html>

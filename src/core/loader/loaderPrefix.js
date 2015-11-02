@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -18,3 +18,4 @@
         root.Gridifier = factory();
     }
 }(this, function () {
+    var Gridifier = function(sourceGrid, sourceSettings) {

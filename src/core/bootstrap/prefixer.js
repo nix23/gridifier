@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -10,32 +10,27 @@
  */
 
 var Prefixer = {
-    prefixes: [ "Moz", "Webkit", "ms", "Ms", "Khtml", "O" ],
-    init: function() {
+    _prefixes: [ "Moz", "Webkit", "ms", "Ms", "Khtml", "O" ],
+    _getter: function(a, b, c) {
+        b = b || document.documentElement;
+        var d = b.style;
+        if (typeof d[a] === "string") return a;
+        var e = a;
+        var a = a.charAt(0).toUpperCase() + a.slice(1);
+        for (var f = 0; f < this._prefixes.length; f++) {
+            var g = this._prefixes[f] + a;
+            if (typeof d[g] === "string") return c(g, e, f);
+        }
     },
     get: function(a, b) {
-        b = b || document.documentElement;
-        var c = b.style;
-        if (typeof c[a] === "string") {
+        return this._getter(a, b, function(a) {
             return a;
-        }
-        var a = a.charAt(0).toUpperCase() + a.slice(1);
-        for (var d = 0; d < this.prefixes.length; d++) {
-            var e = this.prefixes[d] + a;
-            if (typeof c[e] === "string") return e;
-        }
+        });
     },
-    getForCSS: function(a, b) {
-        b = b || document.documentElement;
-        var c = b.style;
-        if (typeof c[a] === "string") {
-            return a;
-        }
-        var d = a;
-        var a = a.charAt(0).toUpperCase() + a.slice(1);
-        for (var e = 0; e < this.prefixes.length; e++) {
-            var f = this.prefixes[e] + a;
-            if (typeof c[f] === "string") return "-" + this.prefixes[e].toLowerCase() + "-" + d;
-        }
+    getForCss: function(a, b) {
+        var c = this;
+        return this._getter(a, b, function(a, b, d) {
+            return "-" + c._prefixes[d].toLowerCase() + "-" + b;
+        });
     }
 };

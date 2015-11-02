@@ -1,6 +1,6 @@
 $(document).ready(function() {
-    window.outerWidthTesterPxWidthPxMarginGrid = {
-        testCallOnPxWidthPxMarginGridPerAllContentBoxItems: function() {
+    window.owPxWidthPxMarginGrid = {
+        withContentBoxItems: function() {
             var gridWidths = [17, 261, 300, 550, 773];
 
             for(var i = 0; i < gridWidths.length; i++) {
@@ -78,7 +78,7 @@ $(document).ready(function() {
             }
         },
 
-        testCallOnPxWidthPxMarginGridPerAllBorderBoxItems: function() {
+        withBorderBoxItems: function() {
             var gridWidths = [17, 261, 300, 550, 773];
 
             for(var i = 0; i < gridWidths.length; i++) {

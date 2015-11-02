@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -14,47 +14,42 @@ SizesResolver.outerWidth = function(a, b, c, d) {
     var c = c || false;
     var d = d || false;
     var e = this.getComputedCSS(a);
-    if (c) var f = false; else if (this.isBrowserNativePercentageCSSValuesCalcStrategy()) var f = false; else if (this.isRecalculatePercentageCSSValuesCalcStrategy()) {
+    if (c || this._areBrowserPtVals()) var f = false; else if (this._areRecalcPtVals()) {
         this._ensureHasParentNode(a);
-        if (this.hasPercentageCSSValue("width", a)) var f = true; else var f = false;
+        var f = this._hasPtCSSVal("width", a);
     }
     if (e.display === "none") return 0;
-    var g = this.getComputedProperties("forOuterWidth", e, a);
+    var g = this._getComputedProps("forOw", e, a);
     var h = g.paddingLeft + g.paddingRight;
     var i = g.marginLeft + g.marginRight;
     var j = g.borderLeftWidth + g.borderRightWidth;
     var k = 0;
-    var l = this.normalizeComputedCSSSizeValue(e.width);
+    var l = this._normalizeComputedCSS(e.width);
     if (l !== false) k = l;
     var m = null;
     var n = null;
     if (f) {
-        m = this._getComputedCSSWithMaybePercentageSizes(a);
-        if (a.parentNode.nodeName == "HTML") var o = true; else var o = false;
-        n = this.recalculatePercentageWidthFunction.call(this, a.parentNode, false, o, true);
-        if (this.hasLastRecalculatedDOMElBorderBoxBS && this.hasPercentageCSSValue("width", a, m)) {
-            n -= this.lastRecalculatedDOMElBorderWidth;
-        }
+        m = this.getUncomputedCSS(a);
+        n = this.recalcPtWidthFn.call(this, a.parentNode, false, a.parentNode.nodeName == "HTML", true);
+        if (this._hasLastBorderBox && this._hasPtCSSVal("width", a, m)) n -= this._lastBorderWidth;
     }
-    if (f && (this.hasPercentageCSSValue("paddingLeft", a, m) || this.hasPercentageCSSValue("paddingRight", a, m))) {
-        h = this._recalculateTwoSidePropertyWithPercentageValues(a, n, g, m, "padding", "horizontal");
+    if (f && this._hasPtCSSVal([ "paddingLeft", "paddingRight" ], a, m)) {
+        h = this._recalcTwoSidePropPtVals(a, n, g, m, "padding");
     }
-    if (f && this.hasPercentageCSSValue("width", a, m)) {
-        k = this._recalculateWidthWithPercentageValue(a, n, m);
-    }
-    if (!this.isBoxSizingBorderBox(e) || this.isBoxSizingBorderBox(e) && !this.isOuterBorderBoxSizing()) {
-        this.lastRecalculatedDOMElRawWidth = k;
+    if (f && this._hasPtCSSVal("width", a, m)) k = this._recalcPtVal(a, n, m, "width");
+    if (!this._isDefBoxSizing(e) || this._isDefBoxSizing(e) && !this._isOuterBoxSizing()) {
+        this._lastRawWidth = k;
         k += h;
         if (!d) k += j;
-        this.hasLastRecalculatedDOMElBorderBoxBS = false;
+        this._hasLastBorderBox = false;
     } else {
-        this.hasLastRecalculatedDOMElBorderBoxBS = true;
-        this.lastRecalculatedDOMElRawWidth = k;
-        this.lastRecalculatedDOMElBorderWidth = j;
+        this._hasLastBorderBox = true;
+        this._lastRawWidth = k;
+        this._lastBorderWidth = j;
     }
     if (b) {
-        if (f && (this.hasPercentageCSSValue("marginLeft", a, m) || this.hasPercentageCSSValue("marginRight", a, m))) {
-            i = this._recalculateTwoSidePropertyWithPercentageValues(a, n, g, m, "margin", "horizontal");
+        if (f && this._hasPtCSSVal([ "marginLeft", "marginRight" ], a, m)) {
+            i = this._recalcTwoSidePropPtVals(a, n, g, m, "margin");
         }
         k += i;
     }

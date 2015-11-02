@@ -18,168 +18,213 @@ module.exports = function(grunt) {
     var api = "src/api/";
     var core = "src/core/";
 
-    var buildSrcFiles = [
+    // Optional classes
+    var selectable = [
+        // Required for renderer antialiasing. (Read http://gridifier.io/api/renderers)
+        // If you are not using 'width(Px|Pt)As || height(Px|Pt)As', you can comment out next line
+        core + "core/antialiaser.js",
+
+        // Required for horizontal grids. (Read http://gridifier.io/grids/grid-types)
+        // If you are using only vertical grids, you can comment out next 6 lines.
+        core + "grid/horizontal/appender.js",
+        core + "grid/horizontal/connections.js",
+        core + "grid/horizontal/coordsFinder.js",
+        core + "grid/horizontal/prepender.js",
+        core + "grid/horizontal/reversedAppender.js",
+        core + "grid/horizontal/reversedPrepender.js",
+
+        // Required for vertical grids. (Read http://gridifier.io/grids/grid-types)
+        // If you are using only horizontal grids, you can comment out next 6 lines.
+        core + "grid/vertical/appender.js",
+        core + "grid/vertical/connections.js",
+        core + "grid/vertical/coordsFinder.js",
+        core + "grid/vertical/prepender.js",
+        core + "grid/vertical/reversedAppender.js",
+        core + "grid/vertical/reversedPrepender.js",
+
+        // Required for render after silentAppend inserts. 
+        // (Read http://gridifier.io/grids/insert-types)
+        // If you are not using 'silentAppend/silentRender' fns, you can comment out next line.
+        core + "renderer/silent.js",
+
+        // Required for images loading.
+        // (Insert operations will wait while all item images are loaded)
+        // (Read http://gridifier.io/grids/insert-types)
+        // If you aren't using 'loadImages: true' setting, you can comment out next 2 lines.
+        core + "images/image.js",
+        core + "images/loader.js",
+
+        // Required for dragifiers.
+        // (Read http://gridifier.io/dragifiers)
+        // If you are not using dragifiers, you can comment out next 3 lines.
+        core + "dragifier/core.js",
+        core + "dragifier/dragifier.js",
+        api + "dragifier/dragifier.js",
+
+        // Required for intersection dragifiers.
+        // (Read http://gridifier.io/dragifiers)
+        // If you are using only discretization dragifiers or not
+        // using dragifiers, you can comment out next line.
+        core + "dragifier/intersection/item.js",
+
+        // Required for discretization dragifiers.
+        // (Read http://gridifier.io/dragifiers)
+        // If you are using only intersection dragifiers or not
+        // using dragifiers, you can comment out next 4 lines.
+        core + "discretizer/core.js",
+        core + "discretizer/discretizer.js",
+        core + "dragifier/discretization/cells.js",
+        core + "dragifier/discretization/item.js",
+
+        // Required for coords changer drivers.
+        // (Read http://gridifier.io/api/renderers)
+        // If you are not using position/translate coords changers, 
+        // you can comment out next 2 lines.
+        api + "coordsChanger/position.js",
+        api + "coordsChanger/translate.js",
+
+        // Required for using built-in rsort functions.
+        // (Read http://gridifier.io/sortings/retransform-sorts)
+        // If you are not using areaEvenly, area(Asc|Desc) and other fns, 
+        // you can comment out next line.
+        api + "sort/rsortHelpers.js",
+
+        // Required for using sort helper object functions.
+        // (Passed as 3-rd param in all sort fn-s by default)
+        // (Read http://gridifier.io/sortings/sorts)
+        // If you are not using sort helper object, you can comment out next line.
+        api + "sort/sortHelpers.js",
+
+        // Required for using rotate toggler fns. (Read http://gridifier.io/api/togglers)
+        // If you are not using them, you can comment out next 2 lines.
+        api + "toggle/factory/rotate.js",
+        api + "toggle/rotate.js",
+
+        // Required for using scale toggler fns. (Read http://gridifier.io/api/togglers)
+        // If you are not using them, you can comment out next 2 lines.
+        api + "toggle/factory/scale.js",
+        api + "toggle/scale.js",
+
+        // Required for using slide toggler fns. (Read http://gridifier.io/api/togglers)
+        // If you are not using them, you can comment out next 2 lines.
+        api + "toggle/factory/slide.js",
+        api + "toggle/slide.js",
+
+        // Required for fade toggler.
+        api + "toggle/fade.js"
+    ];
+
+    // Required classes
+    var required = [
         // Loader start
-        core + "loader/loaderPrefix.js", // Required
+        core + "loader/loaderPrefix.js",
+
+        // Bootstrap start
+        core + "bootstrap/funcs.js",
+        core + "bootstrap/mocks.js",
+        core + "bootstrap/vars.js",
 
         // Sizes Resolver
-        core + "bootstrap/sizesResolver/sizesResolver.js", // Required
-        core + "bootstrap/sizesResolver/init.js", // Required
-        core + "bootstrap/sizesResolver/outerWidth.js", // Required
-        core + "bootstrap/sizesResolver/outerHeight.js", // Required
+        core + "bootstrap/sizesResolver/sizesResolver.js",
+        core + "bootstrap/sizesResolver/init.js",
+        core + "bootstrap/sizesResolver/outerWidth.js",
+        core + "bootstrap/sizesResolver/outerHeight.js",
 
-        // Bootstrap
-        core + "bootstrap/event.js", // Required
-        core + "bootstrap/prefixer.js", // Required
-        core + "bootstrap/dom.js", // Required
-        core + "bootstrap/bootstrap.js", // Required
+        // Bootstrap end
+        core + "bootstrap/event.js",
+        core + "bootstrap/prefixer.js",
+        core + "bootstrap/dom.js",
 
-        // Main
-        core + "gridifier.js", // Required
+        // Connections
+        core + "core/connections/connections.js",
+        core + "core/connections/intersector.js",
+        core + "core/connections/ranges.js",
+        core + "core/connections/sorter.js",
+        core + "core/connections/xyIntersector.js",
 
-        // Core
-        core + "core/collector.js", // Required
-        core + "core/connectedItemMarker.js", // Required
-        core + "core/disconnector.js", // Required
-        core + "core/eventEmitter.js", // Required
-        core + "core/filtrator.js", // Required
-        core + "core/guid.js", // Required
-        core + "core/iterator.js", // Required
-        core + "core/normalizer.js", // Required
-        core + "core/operation.js", // Required
-        core + "core/resorter.js", // Required
-        core + "core/responsiveClassesManager.js", // Required
-        core + "core/sizesResolverManager.js", // Required
+        // Connectors
+        core + "core/connectors/cleaner.js",
+        core + "core/connectors/connectors.js",
+        core + "core/connectors/intersector.js",
+        core + "core/connectors/reposition.js",
+        core + "core/connectors/rounder.js",
+        core + "core/connectors/selector.js",
+        core + "core/connectors/shifter.js",
+        core + "core/connectors/sorter.js",
 
-        // Connections core
-        core + "connections/connections.js", // Required
-        core + "connections/connectionsIntersector.js", // Required
+        // Item
+        core + "core/item/collector.js",
+        core + "core/item/guid.js",
+        core + "core/item/item.js",
 
-        // Connectors core
-        core + "connectors/connectors.js", // Required
-        core + "connectors/connectorsIntersector.js", // Required
-        core + "connectors/connectorsNormalizer.js", // Required
-        core + "connectors/connectorsShifter.js", // Required
-        core + "connectors/transformerConnectors.js", // Required
-
-        // Discretizer
-        // This classes are required per grid discretization dragifiers.
-        // Read http://gridifier.io/dragifiers.
-        // If you are using only connection intersection dragifiers, you can comment out next 3 lines.
-        core + "discretizer/discretizer.js", // Optional
-        core + "discretizer/horizontalCore.js", // Optional
-        core + "discretizer/verticalCore.js", // Optional
-
-        // Dragifiers core
-        core + "dragifier/dragifier.js", // Required
-        core + "dragifier/core.js", // Required
-        core + "dragifier/renderer.js", // Required
-
-        // Connection intersection dragifier
-        // This class is required per intersection dragifier.
-        // Read http://gridifier.io/dragifiers.
-        // If you are using only grid discretization dragifier, you can comment out next line.
-        core + "dragifier/connectionIntersection/draggableItem.js", // Optional
-
-        // Grid discretization dragifier
-        // This classes are required per grid discretization dragifier.
-        // Read http://gridifier.io/dragifiers.
-        // If you are using only intersection dragifier, you can comment out next 2 lines.
-        core + "dragifier/gridDiscretization/cells.js", // Optional
-        core + "dragifier/gridDiscretization/draggableItem.js", // Optional
-
-        // Errors
-        core + "errors/apiSettings.js", // Required
-        core + "errors/collector.js", // Required
-        core + "errors/core.js", // Required
-        core + "errors/coreSettings.js", // Required
-        core + "errors/error.js", // Required
-
-        // Grid
-        core + "grid/grid.js", // Required
-        core + "grid/gridSizesUpdater.js", // Required
-
-        // Images Resolver
-        // This classes are required for images resolving.
-        // (Insert operations will wait while all item images are loaded)
-        // Read http://gridifier.io/grids/insert-types.
-        // If you aren't using image elements with dynamic sizes, you can comment out next 2 lines.
-        core + "imagesResolver/imagesResolver.js", // Optional
-        core + "imagesResolver/resolvedImage.js", // Optional
+        // Managers
+        core + "core/manager/cssManager.js",
+        core + "core/manager/srManager.js",
 
         // Operations
-        core + "operations/append.js", // Required
-        core + "operations/prepend.js", // Required
-        core + "operations/queue.js", // Required
+        core + "core/operation/disconnector.js",
+        core + "core/operation/filtrator.js",
+        core + "core/operation/resorter.js",
+
+        // Core
+        core + "core/core.js",
+        core + "core/eventEmitter.js",
+        core + "core/iterator.js",
+        core + "core/operation.js",
+        core + "core/position.js",
+        core + "core/rounder.js",
+
+        // Grid
+        core + "grid/grid.js",
+
+        // Insert
+        core + "inserter/append.js",
+        core + "inserter/insert.js",
+        core + "inserter/prepend.js",
+        core + "inserter/queue.js",
 
         // Renderer
-        core + "renderer/renderer.js", // Required
-        core + "renderer/rendererConnections.js", // Required
-        core + "renderer/schedulator.js", // Required
-        core + "renderer/silentRenderer.js", // Required
+        core + "renderer/connections.js",
+        core + "renderer/queue.js",
+        core + "renderer/renderer.js",
+
+        // Reposition
+        core + "reposition/data.js",
+        core + "reposition/queue.js",
+        core + "reposition/reposition.js",
+
+        // Coords changer
+        api + "coordsChanger/coordsChanger.js",
+        api + "coordsChanger/default.js",
 
         // Settings
-        core + "settings/apiSettingsParser.js", // Required
-        core + "settings/coreSettingsParser.js", // Required
-        core + "settings/settings.js", // Required
+        api + "settings/settings.js",
+        api + "settings/funcs.js",
 
-        // Sizes Transformer
-        core + "sizesTransformer/itemsReappender.js", // Required
-        core + "sizesTransformer/itemsToReappendFinder.js", // Required
-        core + "sizesTransformer/sizesTransformer.js", // Required
+        // Rsort
+        api + "sort/rsort.js",
 
-        // Transformer operations
-        core + "transformerOperations/transform.js", // Required
+        // Toggle
+        api + "toggle/toggle.js",
+        api + "toggle/syncer.js",
+        api + "toggle/visibility.js"
+    ];
 
-        // Horizontal grid 
-        // This classes are required per horizontal grids.
-        // Read http://gridifier.io/grids/grid-types.
-        // If you are using only vertical grids, you can comment out next 13 lines.
-        core + "horizontalGrid/appender.js", // Optional
-        core + "horizontalGrid/itemCoordsExtractor.js", // Optional
-        core + "horizontalGrid/prepender.js", // Optional
-        core + "horizontalGrid/reversedAppender.js", // Optional
-        core + "horizontalGrid/reversedPrepender.js", // Optional
-        core + "horizontalGrid/connections/connections.js", // Optional
-        core + "horizontalGrid/connections/connectionsHorizontalIntersector.js", // Optional
-        core + "horizontalGrid/connections/connectionsIntersector.js", // Optional
-        core + "horizontalGrid/connections/connectionsRanges.js", // Optional
-        core + "horizontalGrid/connections/connectionsSorter.js", // Optional
-        core + "horizontalGrid/connectors/connectorsCleaner.js", // Optional
-        core + "horizontalGrid/connectors/connectorsSelector.js", // Optional
-        core + "horizontalGrid/connectors/connectorsSorter.js", // Optional
-
-        // Vertical grid 
-        // This classes are required per vertical grids.
-        // Read http://gridifier.io/grids/grid-types.
-        // If you are using only horizontal grids, you can comment out next 13 lines.
-        core + "verticalGrid/appender.js", // Optional
-        core + "verticalGrid/itemCoordsExtractor.js", // Optional
-        core + "verticalGrid/prepender.js", // Optional
-        core + "verticalGrid/reversedAppender.js", // Optional
-        core + "verticalGrid/reversedPrepender.js", // Optional
-        core + "verticalGrid/connections/connections.js", // Optional
-        core + "verticalGrid/connections/connectionsVerticalIntersector.js", // Optional
-        core + "verticalGrid/connections/connectionsIntersector.js", // Optional
-        core + "verticalGrid/connections/connectionsRanges.js", // Optional
-        core + "verticalGrid/connections/connectionsSorter.js", // Optional
-        core + "verticalGrid/connectors/connectorsCleaner.js", // Optional
-        core + "verticalGrid/connectors/connectorsSelector.js", // Optional
-        core + "verticalGrid/connectors/connectorsSorter.js", // Optional
-
-        // Api
-        api + "coordsChanger.js", // Required
-        api + "dragifier.js", // Required
-        api + "filter.js", // Required
-        api + "rotate.js", // Required
-        api + "slide.js", // Required
-        api + "sort.js", // Required
-        api + "toggle.js", // Required
-        api + "toggleTimeouter.js", // Required
+    var loader = [
+        // Objects builder
+        core + "gridifier.js",
 
         // Loader end
-        core + "loader/loaderPostfix.js" // Required
+        core + "loader/loaderPostfix.js"
     ];
+
+    var buildSrcFiles = [];
+    for(var i = 0; i < required.length; i++)
+        buildSrcFiles.push(required[i]);
+    for(var i = 0; i < selectable.length; i++)
+        buildSrcFiles.push(selectable[i]);
+    for(var i = 0; i < loader.length; i++)
+        buildSrcFiles.push(loader[i]);
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -191,7 +236,7 @@ module.exports = function(grunt) {
 
             customBuild: {
                 src: buildSrcFiles,
-                dest: 'build/gridifier-custom.js'
+                dest: 'dist/gridifier-custom.js'
             }
         },
 
@@ -202,8 +247,8 @@ module.exports = function(grunt) {
                     beautify: true,
                     compress: false
                 },
-                src: 'build/gridifier-custom.js',
-                dest: 'build/gridifier-custom.js'
+                src: 'dist/gridifier-custom.js',
+                dest: 'dist/gridifier-custom.js'
             },
             customMinBuild: {
                 options: {
@@ -212,8 +257,8 @@ module.exports = function(grunt) {
                         drop_console: true
                     }
                 },
-                src: 'build/gridifier-custom.js',
-                dest: 'build/gridifier-custom.min.js'
+                src: 'dist/gridifier-custom.js',
+                dest: 'dist/gridifier-custom.min.js'
             }
         },
 
@@ -223,8 +268,8 @@ module.exports = function(grunt) {
                     mode: 'gzip'
                 },
                 files: [{
-                    src: ['build/gridifier-custom.min.js'],
-                    dest: 'build/gzip/gridifier-custom.min.gz.js'
+                    src: ['dist/gridifier-custom.min.js'],
+                    dest: 'dist/gzip/gridifier-custom.min.gz.js'
                 }]
             }
         }

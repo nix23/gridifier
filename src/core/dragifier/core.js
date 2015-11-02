@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -9,220 +9,155 @@
  * Copyright 2015 nTech
  */
 
-Gridifier.Dragifier.Core = function(a, b, c, d, e, f, g, h, i, j, k) {
-    var l = this;
-    this._gridifier = null;
-    this._appender = null;
-    this._reversedAppender = null;
-    this._collector = null;
-    this._connectors = null;
-    this._connections = null;
-    this._settings = null;
-    this._guid = null;
-    this._dragifierRenderer = null;
-    this._sizesResolverManager = null;
-    this._eventEmitter = null;
-    this._connectionsSorter = null;
-    this._cursorOffsetXFromDraggableItemCenter = null;
-    this._cursorOffsetYFromDraggableItemCenter = null;
-    this._gridOffsetLeft = null;
-    this._gridOffsetTop = null;
-    this._executeGridRetransformTimeout = null;
-    this._css = {};
-    this._construct = function() {
-        l._gridifier = a;
-        l._appender = b;
-        l._reversedAppender = c;
-        l._collector = d;
-        l._connectors = e;
-        l._connections = f;
-        l._settings = g;
-        l._guid = h;
-        l._dragifierRenderer = i;
-        l._sizesResolverManager = j;
-        l._eventEmitter = k;
-        if (l._settings.isVerticalGrid()) {
-            l._connectionsSorter = new Gridifier.VerticalGrid.ConnectionsSorter(l._connections, l._settings, l._guid);
-        } else if (l._settings.isHorizontalGrid()) {
-            l._connectionsSorter = new Gridifier.HorizontalGrid.ConnectionsSorter(l._connections, l._settings, l._guid);
+DragifierCore = function() {
+    this._itemCenterCursorOffset = {
+        x: null,
+        y: null
+    };
+    this._gridOffset = {
+        left: null,
+        top: null
+    };
+    this._repositionTimeout = null;
+};
+
+proto(DragifierCore, {
+    calcGridOffsets: function() {
+        this._gridOffset.left = srManager.offsetLeft(grid.get());
+        this._gridOffset.top = srManager.offsetTop(grid.get());
+    },
+    _getOffset: function(a, b, c, d, e, f, g) {
+        var b = b || false;
+        var h = cnsCore.find(a);
+        if (settings.eq("intersections", false) && settings.eq("grid", c)) var i = h[d + "Offset"]; else var i = 0;
+        if (!b) return this._gridOffset[e] + h[g] + i;
+        var j = srManager["outer" + f](a);
+        var k = srManager["outer" + f](a, true);
+        var l = k - j;
+        var m = l / 2;
+        return this._gridOffset[e] + h[g] - m + i;
+    },
+    _getOffsetLeft: function(a, b) {
+        return this._getOffset(a, b, "horizontal", "h", "left", "Width", "x1");
+    },
+    _getOffsetTop: function(a, b) {
+        return this._getOffset(a, b, "vertical", "v", "top", "Height", "y1");
+    },
+    findItemCenterCursorOffsets: function(a, b, c) {
+        var d = this._getOffsetLeft(a) + srManager.outerWidth(a, true) / 2;
+        var e = this._getOffsetTop(a) + srManager.outerHeight(a, true) / 2;
+        this._itemCenterCursorOffset = {
+            x: d - b,
+            y: e - c
+        };
+    },
+    createClone: function(a) {
+        var b = a.cloneNode(true);
+        var c = {
+            left: this._getOffsetLeft(a),
+            top: this._getOffsetTop(a)
+        };
+        collector.markAsNotCollectable(b);
+        settings.getApi("drag")(b, a, srManager);
+        if (Dom.hasTransitions()) {
+            Dom.css3.transform(b, "");
+            Dom.css3.transition(b, "none");
         }
-        l._bindEvents();
-    };
-    this._bindEvents = function() {};
-    this._unbindEvents = function() {};
-    this.destruct = function() {
-        l._unbindEvents();
-    };
-    this._construct();
-    return this;
-};
-
-Gridifier.Dragifier.Core.prototype.determineGridOffsets = function() {
-    this._gridOffsetLeft = this._sizesResolverManager.offsetLeft(this._gridifier.getGrid());
-    this._gridOffsetTop = this._sizesResolverManager.offsetTop(this._gridifier.getGrid());
-};
-
-Gridifier.Dragifier.Core.prototype._getDraggableItemOffsetLeft = function(a, b) {
-    var b = b || false;
-    var c = this._connections.findConnectionByItem(a);
-    if (this._settings.isNoIntersectionsStrategy() && this._settings.isHorizontalGrid()) var d = c.horizontalOffset; else var d = 0;
-    if (b) {
-        var e = this._sizesResolverManager.outerWidth(a);
-        var f = this._sizesResolverManager.outerWidth(a, true);
-        var g = f - e;
-        var h = g / 2;
-        return this._gridOffsetLeft + c.x1 - h + d;
-    } else {
-        return this._gridOffsetLeft + c.x1 + d;
-    }
-};
-
-Gridifier.Dragifier.Core.prototype._getDraggableItemOffsetTop = function(a, b) {
-    var b = b || false;
-    var c = this._connections.findConnectionByItem(a);
-    if (this._settings.isNoIntersectionsStrategy() && this._settings.isVerticalGrid()) var d = c.verticalOffset; else var d = 0;
-    if (b) {
-        var e = this._sizesResolverManager.outerHeight(a);
-        var f = this._sizesResolverManager.outerHeight(a, true);
-        var g = f - e;
-        var h = g / 2;
-        return this._gridOffsetTop + c.y1 - h + d;
-    } else {
-        return this._gridOffsetTop + c.y1 + d;
-    }
-};
-
-Gridifier.Dragifier.Core.prototype.determineInitialCursorOffsetsFromDraggableItemCenter = function(a, b, c) {
-    var d = this._getDraggableItemOffsetLeft(a);
-    var e = this._getDraggableItemOffsetTop(a);
-    var f = this._sizesResolverManager.outerWidth(a, true);
-    var g = this._sizesResolverManager.outerHeight(a, true);
-    var h = d + f / 2;
-    var i = e + g / 2;
-    this._cursorOffsetXFromDraggableItemCenter = h - b;
-    this._cursorOffsetYFromDraggableItemCenter = i - c;
-};
-
-Gridifier.Dragifier.Core.prototype._getMaxConnectionItemZIndex = function() {
-    var a = null;
-    var b = this._connections.get();
-    for (var c = 0; c < b.length; c++) {
-        if (a == null) {
-            a = Dom.toInt(b[c].item.style.zIndex);
-        } else {
-            if (Dom.toInt(b[c].item.style.zIndex) > a) a = Dom.toInt(b[c].item.style.zIndex);
-        }
-    }
-    return Dom.toInt(a);
-};
-
-Gridifier.Dragifier.Core.prototype.createDraggableItemClone = function(a) {
-    var b = a.cloneNode(true);
-    this._collector.markItemAsRestrictedToCollect(b);
-    var c = this._settings.getDraggableItemDecorator();
-    c(b, a, this._sizesResolverManager);
-    if (Dom.isBrowserSupportingTransitions()) {
-        Dom.css3.transform(b, "");
-        Dom.css3.transition(b, "none");
-    }
-    b.style.zIndex = this._getMaxConnectionItemZIndex() + 1;
-    var d = this._sizesResolverManager.outerWidth(a);
-    var e = this._sizesResolverManager.outerHeight(a);
-    b.style.width = d + "px";
-    b.style.height = e + "px";
-    var f = SizesResolver.getComputedCSS(a);
-    b.style.marginLeft = f.marginLeft;
-    b.style.marginTop = f.marginTop;
-    b.style.marginRight = f.marginRight;
-    b.style.marginBottom = f.marginBottom;
-    document.body.appendChild(b);
-    var g = this._getDraggableItemOffsetLeft(a);
-    var h = this._getDraggableItemOffsetTop(a);
-    b.style.left = g + "px";
-    b.style.top = h + "px";
-    this._dragifierRenderer.render(b, g, h);
-    return b;
-};
-
-Gridifier.Dragifier.Core.prototype.createDraggableItemPointer = function(a) {
-    var b = this._getDraggableItemOffsetLeft(a, true);
-    var c = this._getDraggableItemOffsetTop(a, true);
-    var d = document.createElement("div");
-    Dom.css.set(d, {
-        width: this._sizesResolverManager.outerWidth(a, true) + "px",
-        height: this._sizesResolverManager.outerHeight(a, true) + "px",
-        position: "absolute",
-        left: b - this._gridOffsetLeft + "px",
-        top: c - this._gridOffsetTop + "px"
-    });
-    var e = SizesResolver.getComputedCSS(a);
-    var f = e.marginLeft;
-    var g = e.marginTop;
-    this._gridifier.getGrid().appendChild(d);
-    var h = this._settings.getDraggableItemPointerDecorator();
-    h(d);
-    this._dragifierRenderer.render(d, b - this._gridOffsetLeft + parseFloat(f), c - this._gridOffsetTop + parseFloat(g));
-    return d;
-};
-
-Gridifier.Dragifier.Core.prototype.calculateDraggableItemCloneNewDocumentPosition = function(a, b, c) {
-    var d = this._sizesResolverManager.outerWidth(a, true) / 2;
-    var e = this._sizesResolverManager.outerHeight(a, true) / 2;
-    return {
-        x: b - d - this._cursorOffsetXFromDraggableItemCenter * -1,
-        y: c - e - this._cursorOffsetYFromDraggableItemCenter * -1
-    };
-};
-
-Gridifier.Dragifier.Core.prototype.calculateDraggableItemCloneNewGridPosition = function(a, b) {
-    var c = {
-        x1: b.x,
-        x2: b.x + this._sizesResolverManager.outerWidth(a, true) - 1,
-        y1: b.y,
-        y2: b.y + this._sizesResolverManager.outerHeight(a, true) - 1
-    };
-    c.x1 -= this._gridOffsetLeft;
-    c.x2 -= this._gridOffsetLeft;
-    c.y1 -= this._gridOffsetTop;
-    c.y2 -= this._gridOffsetTop;
-    return c;
-};
-
-Gridifier.Dragifier.Core.prototype.reappendGridItems = function() {
-    var a = this;
-    if (this._settings.isDefaultAppend()) {
-        this._connectors.setNextFlushCallback(function() {
-            a._appender.createInitialConnector();
+        Dom.css.set(b, {
+            width: srManager.outerWidth(a) + "px",
+            height: srManager.outerHeight(a) + "px",
+            zIndex: C.MAX_Z,
+            left: c.left + "px",
+            top: c.top + "px"
         });
-    } else if (this._settings.isReversedAppend()) {
-        this._connectors.setNextFlushCallback(function() {
-            a._reversedAppender.createInitialConnector();
+        Dom.css.set4(b, "margin", SizesResolver.getComputedCSS(a));
+        document.body.appendChild(b);
+        dragifier.render(b, c.left, c.top);
+        return b;
+    },
+    createPointer: function(a) {
+        var b = {
+            left: this._getOffsetLeft(a, true),
+            top: this._getOffsetTop(a, true)
+        };
+        var c = Dom.div();
+        Dom.css.set(c, {
+            width: srManager.outerWidth(a, true) + "px",
+            height: srManager.outerHeight(a, true) + "px",
+            position: "absolute",
+            left: b.left - this._gridOffset.left + "px",
+            top: b.top - this._gridOffset.top + "px"
         });
-    }
-    this._eventEmitter.onItemsReappendExecutionEndPerDragifier(function() {
-        var b = a._connectionsSorter.sortConnectionsPerReappend(a._connections.get());
-        var c = [];
-        for (var d = 0; d < b.length; d++) {
-            c.push(b[d].item);
+        var d = SizesResolver.getComputedCSS(a);
+        grid.get().appendChild(c);
+        dragifierApi.getPointerStyler()(c, Dom);
+        var e = parseFloat(d.marginLeft);
+        var f = parseFloat(d.marginTop);
+        dragifier.render(c, b.left - this._gridOffset.left + (isNaN(e) ? 0 : e), b.top - this._gridOffset.top + (isNaN(f) ? 0 : f));
+        return c;
+    },
+    calcCloneNewDocPosition: function(a, b, c) {
+        return {
+            x: b - srManager.outerWidth(a, true) / 2 - this._itemCenterCursorOffset.x * -1,
+            y: c - srManager.outerHeight(a, true) / 2 - this._itemCenterCursorOffset.y * -1
+        };
+    },
+    calcCloneNewGridPosition: function(a, b) {
+        return {
+            x1: b.x - this._gridOffset.left,
+            x2: b.x + srManager.outerWidth(a, true) - 1 - this._gridOffset.left,
+            y1: b.y - this._gridOffset.top,
+            y2: b.y + srManager.outerHeight(a, true) - 1 - this._gridOffset.top
+        };
+    },
+    hasDragId: function(a, b) {
+        for (var c = 0; c < b.length; c++) {
+            if (b[c] == a) return true;
         }
-        a._eventEmitter.emitDragEndEvent(c);
-    });
-    this._executeGridRetransform();
-};
-
-Gridifier.Dragifier.Core.EXECUTE_GRID_RETRANSFORM_MS_TIMEOUT = 20;
-
-Gridifier.Dragifier.Core.prototype._executeGridRetransform = function() {
-    var a = this;
-    if (!Dom.browsers.isAndroidFirefox() && !Dom.browsers.isAndroidUCBrowser()) {
-        this._gridifier.retransformAllSizes();
-        return;
+        return false;
+    },
+    rmDragId: function(a, b) {
+        for (var c = 0; c < b.length; c++) {
+            if (b[c] == a) {
+                b.splice(c, 1);
+                break;
+            }
+        }
+    },
+    initItem: function(a) {
+        if (Dom.hasTransitions()) Dom.css3.transitionProperty(a, "Visibility 0ms ease");
+    },
+    hideItem: function(a) {
+        a.style.visibility = "hidden";
+        Dom.set(a, C.IS_DRAGGABLE_DATA, "y");
+    },
+    showItem: function(a) {
+        a.style.visibility = "visible";
+        Dom.rm(a, C.IS_DRAGGABLE_DATA);
+    },
+    repositionItems: function() {
+        if (settings.eq("append", "default")) var a = function() {
+            appender.createInitialCr();
+        }; else var a = function() {
+            reversedAppender.createInitialCr();
+        };
+        connectors.setNextFlushCb(a);
+        ev.onRepositionEndForDrag(function() {
+            var a = cnsSorter.sortForReappend(connections.get());
+            var b = [];
+            for (var c = 0; c < a.length; c++) b.push(a[c].item);
+            ev.emit(EV.DRAG_END, b);
+        });
+        this._reposition();
+    },
+    _reposition: function() {
+        if (!Dom.browsers.isAndroidFirefox() && !Dom.browsers.isAndroidUC()) {
+            reposition.all();
+            return;
+        }
+        clearTimeout(this._repositionTimeout);
+        this._repositionTimeout = setTimeout(function() {
+            reposition.all();
+        }, C.DRAGIFIER_REPOS_DELAY);
     }
-    if (typeof this._executeGridRetransformTimeout != null) {
-        clearTimeout(this._executeGridRetransformTimeout);
-        this._executeGridRetransformTimeout = null;
-    }
-    this._executeGridRetransformTimeout = setTimeout(function() {
-        a._gridifier.retransformAllSizes();
-    }, Gridifier.Dragifier.Core.EXECUTE_GRID_RETRANSFORM_MS_TIMEOUT);
-};
+});

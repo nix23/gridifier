@@ -1,4 +1,4 @@
-/* Gridifier v1.~.~ source file for custom build.
+/* Gridifier v2.~.~ source file for custom build.
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 
@@ -9,7 +9,7 @@
  * Copyright 2015 nTech
  */
 
-SizesResolver.getComputedCSSFunction = function() {
+SizesResolver._getComputedCSSFn = function() {
     if (window.getComputedStyle) {
         return function(a) {
             return window.getComputedStyle(a, null);
@@ -21,41 +21,44 @@ SizesResolver.getComputedCSSFunction = function() {
     }
 };
 
-SizesResolver.determineMaybePrefixedProperties = function() {
-    this.maybePrefixedProperties.boxSizing = Prefixer.get("boxSizing");
+SizesResolver._findPrefixedProps = function() {
+    this._prefixedProps.boxSizing = Prefixer.get("boxSizing");
 };
 
-SizesResolver.determineBorderBoxComputedSizesCalculationStrategy = function() {
-    var a = document.createElement("div");
-    a.style.width = "100px";
-    a.style.padding = "10px 20px";
-    a.style.borderWidth = "10px 20px";
-    a.style.borderStyle = "solid";
-    var b = this.maybePrefixedProperties.boxSizing;
+SizesResolver._findBorderBoxType = function(a) {
+    Dom.css.set(a, {
+        width: "100px",
+        padding: "10px 20px",
+        borderWidth: "10px 20px",
+        borderStyle: "solid"
+    });
+    var b = this._prefixedProps.boxSizing;
     a.style[b] = "border-box";
     var c = document.body || document.documentElement;
     c.appendChild(a);
     var d = this.getComputedCSS(a);
-    if (this.normalizeComputedCSSSizeValue(d.width) === 100) this.borderBoxSizingStrategy = this.borderBoxSizingStrategies.OUTER; else this.borderBoxSizingStrategy = this.borderBoxSizingStrategies.INNER;
+    if (this._normalizeComputedCSS(d.width) === 100) this._borderBoxType = this._borderBoxTypes.OUTER; else this._borderBoxType = this._borderBoxTypes.INNER;
     c.removeChild(a);
 };
 
-SizesResolver.determinePercentageCSSValuesCalcStrategy = function() {
-    var a = document.createElement("div");
-    a.style.width = "1178px";
-    a.style.height = "300px";
-    a.style.position = "absolute";
-    a.style.left = "-9000px";
-    a.style.top = "0px";
-    a.style.visibility = "hidden";
-    var b = document.body || document.documentElement;
-    b.appendChild(a);
-    var c = document.createElement("div");
-    c.style.width = "10%";
-    c.style.height = "200px";
-    a.appendChild(c);
-    var d = 117.796875;
-    var e = parseFloat(this.outerWidth(c, true));
-    if (d.toFixed(1) == e.toFixed(1)) this.percentageCSSValuesCalcStrategy = this.percentageCSSValuesCalcStrategies.BROWSER_NATIVE; else this.percentageCSSValuesCalcStrategy = this.percentageCSSValuesCalcStrategies.RECALCULATE;
-    b.removeChild(a);
+SizesResolver._findPtValsCalcType = function(a, b, c) {
+    Dom.css.set(a, {
+        width: "1178px",
+        height: "300px",
+        position: "absolute",
+        left: "-9000px",
+        top: "0px",
+        visibility: "hidden"
+    });
+    var d = document.body || document.documentElement;
+    d.appendChild(a);
+    Dom.css.set(b, {
+        width: "10%",
+        height: "200px"
+    });
+    a.appendChild(b);
+    var e = 117.796875.toFixed(1);
+    var f = parseFloat(this.outerWidth(b, true, true)).toFixed(1);
+    this._ptValsCalcType = e == f ? this._ptValsCalcTypes.BROWSER : this._ptValsCalcTypes.RECALC;
+    d.removeChild(a);
 };

@@ -1,6 +1,6 @@
 $(document).ready(function() {
-    window.outerHeightTesterPercentageHeightGrid = {
-        testCallOnPtHeightGridPerAllContentBoxItems: function() {
+    window.ohPtHeightGrid = {
+        withContentBoxItems: function() {
             var gridWrapperPxHeights = [1071, 1333];
 
             for(var i = 0; i < gridWrapperPxHeights.length; i++) {
@@ -102,7 +102,7 @@ $(document).ready(function() {
             }
         },
 
-        testCallOnPtHeightGridPerAllBorderBoxItems: function() {
+        withBorderBoxItems: function() {
             var gridWrapperPxHeights = [1071, 1333];
 
             for(var i = 0; i < gridWrapperPxHeights.length; i++) {

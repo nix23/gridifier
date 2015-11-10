@@ -8,7 +8,7 @@ Visit the [gridifier.io](http://gridifier.io/) website for documentation.
 
 ### License
 
-Gridifier is dual licensed.(GPLv3/Commercial license)
+Gridifier is dual licensed.(Creative Commons BY-NC-SA 4.0/Commercial license)
 
 Read [license](http://gridifier.io/license/) for details.
 

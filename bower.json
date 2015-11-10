@@ -1,11 +1,28 @@
 {
     "name": "gridifier",
-    "version": "2.0.0",
+    "description": "async responsive html grids",
     "license": [
-        "GPLV3 for non-commercial usage",
-        "Commercial license for commercial usage"
+        "Non-commercial license - https://creativecommons.org/licenses/by-nc-sa/4.0/",
+        "Commercial license - http://gridifier.io/license (Commercial license)"
+    ],
+    "main": [
+        "dist/gridifier.js"
+    ],
+    "moduleType": "amd",
+    "keywords": [
+        "grids",
+        "async-grids",
+        "grid-layouts"
     ],
     "authors": [
-        { "name": "Eduard Pleh", "email": "szdszdszd@inbox.lv" }
-    ]
+        { 
+            "name": "Eduard Pleh", 
+            "email": "eduard.pleh@gmail.com" 
+        }
+    ],
+    "homepage": "http://gridifier.io"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/nix23/gridifier"
+    }
 }

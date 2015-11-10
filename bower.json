@@ -20,7 +20,7 @@
             "email": "eduard.pleh@gmail.com" 
         }
     ],
-    "homepage": "http://gridifier.io"
+    "homepage": "http://gridifier.io",
     "repository": {
         "type": "git",
         "url": "https://github.com/nix23/gridifier"

@@ -1,6 +1,6 @@
 {
   "name": "gridifier",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "async responsive html grids",
   "devDependencies": {
     "grunt": "~0.4.5",
@@ -13,7 +13,7 @@
     "async-grids",
     "grid-layouts"
   ],
-  "bugs": { 
+  "bugs": {
     "url": "https://github.com/nix23/gridifier/issues",
     "email": "eduard.pleh@gmail.com"
   },

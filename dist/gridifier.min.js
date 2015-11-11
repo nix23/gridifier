@@ -1,4 +1,4 @@
-/* Gridifier v2.0.1
+/* Gridifier v2.0.3
  * Async Responsive HTML Grids
  * http://gridifier.io
  * 

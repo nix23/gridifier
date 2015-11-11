@@ -1,6 +1,6 @@
 {
   "name": "gridifier",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "async responsive html grids",
   "devDependencies": {
     "grunt": "~0.4.5",

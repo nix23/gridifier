@@ -92,13 +92,20 @@ proto(Grid, {
     },
     _resize: function(a, b, c) {
         var d = connections.get();
-        if (d.length == 0) return;
-        var e = d[0][a];
-        for (var f = 1; f < d.length; f++) {
-            if (d[f][a] > e) e = d[f][a];
+        if(d.length > 0) {
+            var e = d[0][a];
+            for (var f = 1; f < d.length; f++) {
+                if (d[f][a] > e) e = d[f][a];
+            }
+
+            e = e + 1;
         }
+        else {
+            var e = 0;
+        }
+
         var g = {};
-        g[b] = e + 1 + "px";
+        g[b] = e + "px";
         if (settings.eq("gridResize", "fit") || settings.eq("gridResize", "expand") && c() < e) Dom.css.set(this._grid, g);
         ev.emit(EV.GRID_RESIZE, this._grid);
     }

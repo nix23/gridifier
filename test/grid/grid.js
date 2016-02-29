@@ -281,7 +281,7 @@ $(document).ready(function() {
             }
 
             resize();
-            ok(grid.x2() == 0 && grid.y2() == 0 && evCalls == 1,
+            ok(grid.x2() == 0 && grid.y2() == 0 && evCalls == 2,
                "resize with gridResize eq disabled ok(vg)");
 
             settings.set("gridResize", "fit");
@@ -349,7 +349,7 @@ $(document).ready(function() {
             }
 
             resize();
-            ok(grid.y2() == 0 && grid.x2() == 0 && evCalls == 1,
+            ok(grid.y2() == 0 && grid.x2() == 0 && evCalls == 2,
                 "resize with gridResize eq disabled ok(hg)");
 
             settings.set("gridResize", "fit");

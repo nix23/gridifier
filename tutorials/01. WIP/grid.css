@@ -10,7 +10,7 @@ body {
     width: 100%;
     height: 100%;
     /*background: blue;*/
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 .grid {
@@ -25,4 +25,30 @@ body {
 
 .grid > div {
     visibility: hidden;
+}
+
+.smallTest {
+    width: 100px; 
+    height: 100px; 
+    margin: 20px; 
+    background: red;
+}
+
+.bigTest {
+    width: 240px;
+    height: 240px;
+    background: blue;
+}
+
+.bigTest2 {
+    width: 240px;
+    height: 240px;
+    background: blue;
+}
+
+.item {
+    visibility: hidden; 
+    position: absolute; 
+    left: 0px; 
+    top: 0px;
 }

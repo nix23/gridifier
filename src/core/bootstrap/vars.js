@@ -133,7 +133,8 @@ var E = {
 // Event consts
 var EV = {
     SHOW: "Show", HIDE: "Hide", GRID_RESIZE: "GridResize", CSS_CHANGE: "CssChange", REPOSITION_END: "RepositionEnd",
-    REPOSITION: "Reposition", DISCONNECT: "Disconnect", INSERT: "Insert", DRAG_END: "DragEnd"
+    REPOSITION: "Reposition", DISCONNECT: "Disconnect", INSERT: "Insert", DRAG_END: "DragEnd",
+    DRAG_RELEASE: "DragRelease"
 }
 
 // Internal event consts

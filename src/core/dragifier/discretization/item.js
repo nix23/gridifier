@@ -56,6 +56,7 @@ proto(DiscrDraggableItem, {
         dragifierCore.showItem(this._item);
         this._item = null;
         this._itemCn.restrictCollect = false;
+        ev.emit(EV.DRAG_RELEASE);
     },
     dragMove: function(a, b) {
         var c = dragifierCore.calcCloneNewDocPosition(this._item, a, b);

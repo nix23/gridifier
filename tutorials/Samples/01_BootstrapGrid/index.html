@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Gridifier sample: Bootstrap grid with sortings and filters</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Boilerplate styles -->
+    <link rel="stylesheet" href="../../../vendor/css/normalize.css">
+    <link rel="stylesheet" href="../../../vendor/css/main.css">
+    <link rel="stylesheet" href="../../../vendor/css/bootstrap.css">
+
+    <!-- Tutorial styles -->
+    <link rel="stylesheet" href="grid.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Controls -->
+            <div class="clearfix">
+                <div class="pull-left">
+                     <h4>Options:</h4>
+                </div>
+                
+                <div class="pull-right">
+                    <select id="asc">
+                        <option value="a_z" selected>A - Z</option>
+                        <option value="z_a">Z - A</option>
+                    </select>
+
+                    <select id="filter">
+                        <option value="all" selected>All</option>
+                        <option value="blue">Blue</option>
+                        <option value="violet">Violet</option>
+                        <option value="red">Red</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Items Grid -->
+            <div class="grid">
+            </div>
+        </div>
+    </div>
+
+    <!-- Vendor includes -->
+    <script src="../../../vendor/js/jquery-1.10.2.min.js"></script>
+    <script src="../../../vendor/js/bootstrap.js"></script>
+    <script src="../../../vendor/js/modernizr.custom.js"></script>
+    <script src="../../../vendor/js/hoverToFocus.js"></script>
+    <script src="../../../vendor/js/proto.js"></script>
+    <script src="../../../dist/gridifier.js"></script>
+
+    <!-- Tutorial includes -->
+    <script src="app.js"></script>
+    <script>
+        $(document).ready(function() {
+            var app = new App();
+            app.init();
+        });
+    </script>
+</body>
+</html>

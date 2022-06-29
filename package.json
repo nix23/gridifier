@@ -1,7 +1,7 @@
 {
   "name": "gridifier",
   "version": "2.0.3",
-  "description": "async responsive html grids",
+  "description": "Library for grid layout sort/filter/drag and drop",
   "devDependencies": {
     "grunt": "~0.4.5",
     "grunt-contrib-compress": "~0.13.0",

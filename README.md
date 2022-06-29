@@ -1,6 +1,6 @@
 # Gridifier: Library for grid layout sort/filter + multitouch drag and drop
 
-<img align="right" height="260" src="http://gridifier.io/bundles/ntechclient/images/logo_500_600.png">
+<img align="right" height="260" src="http://45.55.240.120/bundles/ntechclient/images/logo_500_600.png">
 
 ### Documentation
 

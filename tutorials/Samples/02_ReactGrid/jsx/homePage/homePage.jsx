@@ -25,7 +25,8 @@ var HomePage = React.createClass({
                 "red": function(item) { return item.classList.contains("redItem"); },
                 "violet": function(item) { return item.classList.contains("violetItem"); },
                 "blue": function(item) { return item.classList.contains("blueItem"); }
-            }
+            },
+            dragifier: true
         }); 
 
         var filters = ["redItem", "violetItem", "blueItem"];

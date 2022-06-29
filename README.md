@@ -1,19 +1,11 @@
-# Gridifier: Async Responsive HTML Grids
+# Gridifier: Library for grid layout sort/filter + multitouch drag and drop
 
 <img align="right" height="260" src="http://gridifier.io/bundles/ntechclient/images/logo_500_600.png">
 
 ### Documentation
 
-Visit the [gridifier.io](http://gridifier.io/) website for documentation.
+Visit the [website](http://45.55.240.120/app.php/) website for documentation.
 
 ### License
 
-Gridifier is dual licensed.(Creative Commons BY-NC-SA 4.0/Commercial license)
-
-Read [license](http://gridifier.io/license/) for details.
-
-### Support
-
-For any questions feel free to use gridifier community [community](http://community.gridifier.io/).
-
-You can find the gridifier team in skype.(username Gridifier)
+MIT
